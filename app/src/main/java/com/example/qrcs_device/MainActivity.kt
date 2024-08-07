@@ -5,10 +5,14 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 
 
 class MainActivity : AppCompatActivity() {
@@ -24,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     var log_view: TextView? = null
     var command_input: EditText? = null
     var send_btn: Button? = null
+    var toolbar: Toolbar? = null
 
 
 
@@ -66,6 +71,10 @@ fun logout(){
         log_view = findViewById(R.id.textView_log)
         command_input = findViewById(R.id.EditText_command)
         send_btn = findViewById(R.id.button_send)
+        toolbar = findViewById(R.id.toolbar)
+        setSupportActionBar(toolbar)
+        val actionBar: ActionBar? = supportActionBar
+        actionBar?.setDisplayShowTitleEnabled(false)
 
         val username = preferences.get_str("username")
         if (username.isNotEmpty()){
@@ -98,5 +107,18 @@ fun logout(){
             }
         }
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.main_menu, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.id_logout){
+            logout()
+        }
+        return super.onOptionsItemSelected(item)
     }
 }
