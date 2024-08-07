@@ -76,10 +76,10 @@ fun logout(){
         val actionBar: ActionBar? = supportActionBar
         actionBar?.setDisplayShowTitleEnabled(false)
 
-        val username = preferences.get_str("username")
-        if (username.isNotEmpty()){
-            log_view!!.setText("${log_view!!.text.toString()} \nLogged as ${username}")
-        }
+//        val username = preferences.get_str("username")
+//        if (username.isNotEmpty()){
+//            log_view!!.setText("${log_view!!.text.toString()} \nLogged as ${username}")
+//        }
 
         send_btn?.setOnClickListener {
             val command = command_input?.editableText.toString()
