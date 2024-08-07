@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">qrcs_device</string>
+    <string name="qrdevice_client_app">QRdevice client app</string>
+    <string name="command">command</string>
+    <string name="send">Send</string>
+    <string name="login">Login</string>
+    <string name="password">Password</string>
+    <string name="enter">Sign in</string>
+    <string name="in_developing">In developing.</string>
+    <string name="wrong_login">"Wrong login or password."</string>
+</resources>

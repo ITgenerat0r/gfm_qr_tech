@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">qrcs_device</string>
+    <string name="qrdevice_client_app">QRdevice клиентское приложение</string>
+    <string name="command">Команда</string>
+    <string name="send">Отправить</string>
+    <string name="login">Логин</string>
+    <string name="password">Пароль</string>
+    <string name="enter">Войти</string>
+    <string name="in_developing">В разработке.</string>
+    <string name="wrong_login">Неверный логин или пароль.</string>
+</resources>
