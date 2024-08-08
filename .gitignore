@@ -13,3 +13,5 @@
 .externalNativeBuild
 .cxx
 local.properties
+python/Config.py 
+python/__pycache__ 
