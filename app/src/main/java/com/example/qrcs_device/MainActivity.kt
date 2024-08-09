@@ -101,6 +101,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+//        check if not developer
+        logout()
         if (preferences.get_str("action") == "auth"){
             val username = preferences.get_str("username")
             if (username.isNotEmpty()){

@@ -31,20 +31,19 @@ class Auth : AppCompatActivity() {
         val out_errors: TextView = findViewById(R.id.textView_errors)
 
         signin_btn.setOnClickListener {
-            val pref = SharedPreference(this)
             val ip = pref.get_str("server_ip")
             val port = pref.get_int("server_port")
             val cntr = Controller(ip, port)
-            val login = login_input.text
+            val login_i = login_input.text
             val passwd = passwd_input.text
             // sign in here
-            val rq = "lg ${login} ${passwd}"
+            val rq = "lg ${login_i} ${passwd}"
             Log.d(TAG, String.format("tx: %s", rq))
             val rx = cntr.send(rq)
             Log.d(TAG, String.format("rx: %s", rx))
 
 
-            pref.set_str("login", login.toString())
+            pref.set_str("login", login_i.toString())
             pref.set_str("passwd", passwd.toString())
 
             val rx_data = rx.split(' ')

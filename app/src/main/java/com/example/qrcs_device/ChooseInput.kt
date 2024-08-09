@@ -36,15 +36,25 @@ class ChooseInput : AppCompatActivity() {
 
             //
             val qr_data = pref.get_str("qr_code") // need handler or in onResume()
+            // set qr_data to input field
         }
 
         val btn_apply = findViewById<Button>(R.id.btn_apply)
         btn_apply.setOnClickListener {
             val input_number = findViewById<EditText>(R.id.input_serial_number)
-            val serial_number = input_number.text
+            var serial_number = 0
+
+            if(input_number.text.toString() != ""){
+                serial_number = input_number.text.toString().toInt()
+
+                val pref = SharedPreference(this)
+                pref.set_int("serial_number", serial_number)
+                val intent = Intent(this, DeviceActivity::class.java)
+                startActivity(intent)
+            }
+
             Log.d(TAG, "Number: ${serial_number}")
 
-            // get data for this number and user then run edit or readonly activity
         }
 
         val toolbar: Toolbar = findViewById(R.id.toolbar_choose_input)

@@ -37,3 +37,12 @@ CREATE TABLE operations
     dt date not null,
     CONSTRAINT PK_operations PRIMARY KEY(id)
 );
+
+CREATE TABLE devices
+(
+    serial_number int not null unique,
+    decimal_number varchar(32)
+    d_name varchar(256),
+    d_type varchar(128),
+    CONSTRAINT PK_devices PRIMARY KEY(id)
+);
