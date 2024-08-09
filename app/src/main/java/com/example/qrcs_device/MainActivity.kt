@@ -1,8 +1,6 @@
 package com.example.qrcs_device
 
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -18,7 +16,7 @@ import androidx.appcompat.widget.Toolbar
 class MainActivity : AppCompatActivity() {
 
 
-    var ip = "192.168.106.252"
+    var ip = "192.168.47.252"
     var port = 27499
     val cntr = Controller(ip, port)
 
@@ -41,12 +39,12 @@ class MainActivity : AppCompatActivity() {
 //        }
 //        return true
 //    }
-fun logout(){
-    preferences.set_str("passwd", "")
-    preferences.set_str("username", "")
-    val intent = Intent(this, Auth::class.java)
-    startActivity(intent)
-}
+    fun logout(){
+        preferences.set_str("passwd", "")
+        preferences.set_str("username", "")
+        val intent = Intent(this, Auth::class.java)
+        startActivity(intent)
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,6 +63,9 @@ fun logout(){
         Log.d(TAG, String.format("rx: %s", rx))
         if (login == "" || password == "" || rx == "error"){
             val intent = Intent(this, Auth::class.java)
+            startActivity(intent)
+        } else {
+            val intent = Intent(this, ChooseInput::class.java)
             startActivity(intent)
         }
 

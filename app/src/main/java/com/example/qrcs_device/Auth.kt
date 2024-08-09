@@ -1,6 +1,7 @@
 package com.example.qrcs_device
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -53,7 +54,10 @@ class Auth : AppCompatActivity() {
 
             if (rx_data.isNotEmpty() && rx_data[0] == "success"){
                 pref.set_str("action", "auth")
-                finish()
+
+                val intent = Intent(this, ChooseInput::class.java)
+                startActivity(intent)
+//                finish()
             } else {
                 out_errors.setText(R.string.wrong_login)
             }

@@ -9,4 +9,8 @@
     <string name="enter">Войти</string>
     <string name="in_developing">В разработке.</string>
     <string name="wrong_login">Неверный логин или пароль.</string>
+    <string name="input_type">Выберите способ ввода</string>
+    <string name="serial_number">Serial number</string>
+    <string name="apply">Apply</string>
+    <string name="read_qr_code">Read QR code</string>
 </resources>

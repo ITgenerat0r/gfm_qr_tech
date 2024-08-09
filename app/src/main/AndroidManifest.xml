@@ -16,6 +16,9 @@
         android:theme="@style/Theme.Qrcs_device"
         tools:targetApi="33">
         <activity
+            android:name=".ChooseInput"
+            android:exported="false" />
+        <activity
             android:name=".Auth"
             android:exported="false" />
         <activity
