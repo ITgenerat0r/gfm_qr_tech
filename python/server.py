@@ -92,6 +92,35 @@ def handler(conn, addr):
 				cn.send(f"success {worker['w_name']}")
 			else:
 				cn.send("error")
+		elif ldata.get(0) == "getdevicedata":
+			number = ldata.get(1)
+			device = db.get_device(number)
+			if device:
+				print("device")
+				print(device)
+				device_data = f"serial_number:{device['serial_number']}|"
+				device_data += f"decimal_number:{device['decimal_number']}|"
+				device_data += f"d_name:{device['d_name']}|"
+				device_data += f"d_type:{device['d_type']}"
+				cn.send(device_data)
+			else:
+				cn.send("none")
+		elif ldata.get(0) == "getworkergroups":
+			data = db.get_worker_groups(ldata.get(1))
+			if data:
+				cn.send("???")
+			else:
+				cn.send("none")
+		elif ldata.get(0) == "getdeviceoperations":
+			ops = db.get_operation_for_device(ldata.get(1))
+			tx = ""
+			for o in ops:
+				if len(tx) > 0:
+					tx += "•\n"
+				tx += f"date:{o['dt']}|worker:{o['worker']}|operation:{o['operation']}"
+			if not tx:
+				tx = "none"
+			cn.send(tx)
 		elif ldata.get(0) == "test":
 			cn.send("test_ok")
 		else:

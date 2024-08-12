@@ -213,8 +213,16 @@ class Techno(Database):
             return ""
 
 
+    def get_device(self, number):
+        data = self._fetchall(f"select * from devices where serial_number = {number}")
+        if len(data):
+            return data[0]
+        return {}
+
+
     def delete_device(self, number):
         self._commit(f"delete from operations where serial_number = {number}")
+        self._commit(f"delete from devices where serial_number = {number}")
 
     def login(self, login, password):
         worker = self.get_worker(login)
@@ -222,3 +230,10 @@ class Techno(Database):
             if worker['w_passhash'] == password:
                 return True
         return False
+
+
+    def get_worker_groups(self, worker_login):
+        data = self._fetchall(f"select * from wg_bonds where w_login = '{worker_login}'")
+        if data:
+            return data
+        return {}

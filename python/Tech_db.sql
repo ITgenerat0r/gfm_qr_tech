@@ -15,12 +15,13 @@ CREATE TABLE workers
 
 CREATE TABLE wg_bonds
 (
-    id not null AUTO_INCREMENT,
+    id int not null AUTO_INCREMENT,
     w_login varchar(256) not null,
-    g_name varchar(256) not null
+    g_name varchar(256) not null,
+    constraint PK_bonds primary key(id)
 );
 
-CREATE TABLE groups
+CREATE TABLE user_groups
 (
     id int not null AUTO_INCREMENT,
     g_name varchar(256) not null unique,
@@ -41,8 +42,8 @@ CREATE TABLE operations
 CREATE TABLE devices
 (
     serial_number int not null unique,
-    decimal_number varchar(32)
+    decimal_number varchar(32),
     d_name varchar(256),
     d_type varchar(128),
-    CONSTRAINT PK_devices PRIMARY KEY(id)
+    CONSTRAINT PK_devices PRIMARY KEY(serial_number)
 );
