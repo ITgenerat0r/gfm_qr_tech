@@ -35,7 +35,7 @@ CREATE TABLE operations
     serial_number int not null,
     operation varchar(128) not null,
     worker varchar(256) not null,
-    dt date not null,
+    dt datetime not null,
     CONSTRAINT PK_operations PRIMARY KEY(id)
 );
 

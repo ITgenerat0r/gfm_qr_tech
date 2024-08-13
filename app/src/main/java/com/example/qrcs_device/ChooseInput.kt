@@ -1,19 +1,26 @@
 package com.example.qrcs_device
 
 import android.content.Intent
+import android.opengl.Visibility
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.TextView
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.widget.Toolbar
 
 
 
 class ChooseInput : AppCompatActivity() {
+    
+    lateinit var txt_status: TextView
+    lateinit var btn_add: Button
+    
 
     fun logout(){
         val preferences = SharedPreference(this)
@@ -26,6 +33,10 @@ class ChooseInput : AppCompatActivity() {
         val TAG = "ChooseInput"
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choose_input)
+        
+        txt_status = findViewById(R.id.textView_status)
+        btn_add = findViewById(R.id.btn_add_device)
+        btn_add.visibility = View.INVISIBLE
 
 
         val btn_qr = findViewById<Button>(R.id.btn_read_qr)
@@ -74,5 +85,31 @@ class ChooseInput : AppCompatActivity() {
             logout()
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val pref = SharedPreference(this)
+        val d_status = pref.get_str("device_status")
+        btn_add.visibility = View.INVISIBLE
+        if (d_status == "none"){
+            val ip = pref.get_str("server_ip")
+            val port = pref.get_int("server_port")
+            val cntr = Controller(ip, port)
+            val groups_rx = cntr.send("getworkergroups ${pref.get_str("login")}")
+            val groups: ArrayList<String> = arrayListOf()
+            for (g in groups_rx.split('|')){
+                groups.add(g)
+            }
+            txt_status.text = getString(R.string.device_not_exist)
+            if ("editors" in groups || "admins" in groups){
+                btn_add.visibility = View.VISIBLE
+            }
+        } else if (d_status == "error"){
+            txt_status.text = getString(R.string.something_went_wrong)
+        } else {
+            txt_status.text = ""
+        }
+        pref.set_str("device_status", "")
     }
 }

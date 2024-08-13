@@ -107,16 +107,23 @@ def handler(conn, addr):
 				cn.send("none")
 		elif ldata.get(0) == "getworkergroups":
 			data = db.get_worker_groups(ldata.get(1))
-			if data:
-				cn.send("???")
+			tx = ""
+			for g in data:
+				if tx:
+					tx += "|"
+				tx += f"{g['g_name']}"
+			if tx:
+				cn.send(tx)
 			else:
 				cn.send("none")
 		elif ldata.get(0) == "getdeviceoperations":
 			ops = db.get_operation_for_device(ldata.get(1))
+			print(ldata.get_all())
+			print("ops", ops)
 			tx = ""
 			for o in ops:
 				if len(tx) > 0:
-					tx += "•\n"
+					tx += "•"
 				tx += f"date:{o['dt']}|worker:{o['worker']}|operation:{o['operation']}"
 			if not tx:
 				tx = "none"
