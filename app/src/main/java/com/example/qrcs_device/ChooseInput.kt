@@ -20,6 +20,7 @@ class ChooseInput : AppCompatActivity() {
     
     lateinit var txt_status: TextView
     lateinit var btn_add: Button
+    lateinit var input_number: TextView
     
 
     fun logout(){
@@ -52,7 +53,7 @@ class ChooseInput : AppCompatActivity() {
 
         val btn_apply = findViewById<Button>(R.id.btn_apply)
         btn_apply.setOnClickListener {
-            val input_number = findViewById<EditText>(R.id.input_serial_number)
+            input_number = findViewById<EditText>(R.id.input_serial_number)
             var serial_number = 0
 
             if(input_number.text.toString() != ""){
@@ -72,6 +73,20 @@ class ChooseInput : AppCompatActivity() {
         setSupportActionBar(toolbar)
         val actionBar: ActionBar? = supportActionBar
         actionBar?.setDisplayShowTitleEnabled(false)
+
+        val btn_add_device: Button = findViewById(R.id.btn_add_device)
+        btn_add_device.setOnClickListener {
+            var serial_number = 0
+
+            if(input_number.text.toString() != ""){
+                serial_number = input_number.text.toString().toInt()
+                val pref = SharedPreference(this)
+                pref.set_int("serial_number", serial_number)
+                val intent = Intent(this, AddDeviceActivity::class.java)
+                startActivity(intent)
+            }
+        }
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

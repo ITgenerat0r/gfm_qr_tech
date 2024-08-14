@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
+import android.view.MenuItem
 import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.ActionBar
@@ -14,8 +15,18 @@ import com.example.qrcs_device.objects.Operation
 class DeviceActivity : AppCompatActivity() {
     val TAG = "DeviceActivity"
 
+
     var operations: ArrayList<Operation> = arrayListOf()
     lateinit var listview_operations: ListView
+//    lateinit var pref: SharedPreference
+    lateinit var cntr: Controller
+    lateinit var pref: SharedPreference
+    lateinit var login: String
+    private var serial_number: Int = 0
+    var operation_types: MutableList<String> = mutableListOf()
+
+
+
 //    var operations: MutableMap<String, String> = mutableMapOf()
 //    lateinit var login: String
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,9 +39,9 @@ class DeviceActivity : AppCompatActivity() {
         val actionBar: ActionBar? = supportActionBar
         actionBar?.setDisplayShowTitleEnabled(false)
         actionBar?.setDisplayHomeAsUpEnabled(true)
-        val pref = SharedPreference(this)
-//        login = pref.get_str("login")
-        val serial_number = pref.get_int("serial_number")
+        pref = SharedPreference(this)
+        login = pref.get_str("login")
+        serial_number = pref.get_int("serial_number")
         toolbar.title = serial_number.toString()
 
         val text_device = findViewById<TextView>(R.id.text_device_data)
@@ -40,7 +51,7 @@ class DeviceActivity : AppCompatActivity() {
 
         val ip = pref.get_str("server_ip")
         val port = pref.get_int("server_port")
-        val cntr = Controller(ip, port)
+        cntr = Controller(ip, port)
         // get user groups here ...
         val groups_rx = cntr.send("getworkergroups ${pref.get_str("login")}")
         val groups: ArrayList<String> = arrayListOf()
@@ -73,6 +84,10 @@ class DeviceActivity : AppCompatActivity() {
         // ====================================================================
 
         // ========== OPERATIONS ==============================================
+        val op_types = cntr.send("getoperationtypes")
+        for (st in op_types.split('|')){
+            operation_types.add(st)
+        }
         val oper_data = cntr.send("getdeviceoperations ${serial_number}")
         Log.d(TAG, "oper_data")
         Log.d(TAG, oper_data)
@@ -102,6 +117,11 @@ class DeviceActivity : AppCompatActivity() {
 
         // ====================================================================
 
+        val empty_operation = Operation()
+        empty_operation.set_worker(login)
+        empty_operation.set_editable(true)
+        empty_operation.set_operation_types(operation_types)
+        operations.add(empty_operation)
         val adapter = DeviceOperationsAdapter(this, operations)
         listview_operations.adapter = adapter
         adapter.notifyDataSetChanged()
@@ -112,6 +132,16 @@ class DeviceActivity : AppCompatActivity() {
         val inflater = menuInflater
         inflater.inflate(R.menu.device_menu, menu)
         return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.id_delete_device){
+            Log.d(TAG, "DELETE")
+            cntr.send("deletedevice ${login} ${serial_number}")
+            Log.d(TAG, "DONE")
+        }
+        finish()
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onSupportNavigateUp(): Boolean {

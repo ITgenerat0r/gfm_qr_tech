@@ -128,6 +128,39 @@ def handler(conn, addr):
 			if not tx:
 				tx = "none"
 			cn.send(tx)
+		elif ldata.get(0) == "createdevice":
+			login = ldata.get(1)
+			data = ldata.get(2)
+			serial = ""
+			decimal = ""
+			name = ""
+			tp = ""
+			for i in data.split('|'):
+				kv = i.split(':')
+				print(kv)
+				key = kv[0]
+				value = kv[1]
+				if key == "serial":
+					serial = value
+				elif key == "decimal":
+					decimal = value
+				elif key == "name":
+					name = value
+				elif key == "type":
+					tp = value
+			cn.send('ok')
+			res = db.add_device(serial, decimal, name, tp)
+			print(f"add status: {res}")
+		elif ldata.get(0) == "deletedevice":
+			login = ldata.get(1)
+			number = int(ldata.get(2))
+			# check login
+			if number:
+				db.delete_device(number)
+				print(f"deleted {number}")
+		elif ldata.get(0) == "getoperationtypes":
+			tx = db.get_stages()
+			cn.send(tx)
 		elif ldata.get(0) == "test":
 			cn.send("test_ok")
 		else:

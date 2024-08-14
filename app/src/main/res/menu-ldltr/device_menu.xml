@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-
+    <item
+        android:id="@+id/id_delete_device"
+        android:icon="@drawable/baseline_delete_forever_24"
+        android:orderInCategory="10"
+        android:title=""
+        android:visible="true"
+        app:showAsAction="ifRoom" />
 
 </menu>

@@ -2,9 +2,19 @@ package com.example.qrcs_device.objects
 
 class Operation() {
     var operation: String = ""
+    var operation_types = mutableListOf<String>()
     var worker: String = ""
     var date: String = ""
+    var editable: Boolean = false
 
+
+    fun get_operation_types(): MutableList<String>{
+        return this.operation_types
+    }
+
+    fun set_operation_types(items: MutableList<String>){
+        this.operation_types = items
+    }
 
     fun get_operation(): String{
         return this.operation
@@ -32,6 +42,14 @@ class Operation() {
         this.date = dt
     }
 
+    fun is_editable():Boolean{
+        return this.editable
+    }
+
+    fun set_editable(e: Boolean){
+        this.editable = e
+    }
+
     fun get_field(key: String): String{
         if (key == "date") return this.date
         if (key == "worker") return this.worker
@@ -52,6 +70,8 @@ class Operation() {
     override fun toString(): String {
         return "Operation(operation='$operation', worker='$worker', date='$date')"
     }
+
+
 
 
 }

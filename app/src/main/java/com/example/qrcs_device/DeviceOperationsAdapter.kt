@@ -8,8 +8,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.BaseAdapter
 import android.widget.Button
+import android.widget.Spinner
 import android.widget.TextView
 import com.example.qrcs_device.objects.Operation
 
@@ -24,6 +26,7 @@ class DeviceOperationsAdapter(private var activity: Activity, private var items:
         var txt_operation: TextView
         var txt_date: TextView
         var txt_worker: TextView
+        var spin_operation: Spinner
 
         init {
 //            this.btn_edit = row.findViewById(R.id.)
@@ -31,6 +34,7 @@ class DeviceOperationsAdapter(private var activity: Activity, private var items:
             this.txt_operation = row.findViewById(R.id.textView_op_operation)
             this.txt_date = row.findViewById(R.id.textView_op_date)
             this.txt_worker = row.findViewById(R.id.textView_op_worker)
+            this.spin_operation = row.findViewById(R.id.spinner_op_operation)
         }
     }
     override fun getCount(): Int {
@@ -67,15 +71,23 @@ class DeviceOperationsAdapter(private var activity: Activity, private var items:
         viewHolder.txt_date.text = oper.get_date()
         viewHolder.txt_worker.text = oper.get_worker()
 
-//        viewHolder.btn_delete.setOnClickListener {
-//            Log.d(TAG, "onClick(Delete $position)")
-////            val storage = Storage(activity.baseContext)
-////            storage.load()
-////            storage.delete_device(id)
-////            storage.save()
-////            items = storage.for_adapter()
-//            this.notifyDataSetChanged()
-//        }
+
+        if (oper.is_editable()){
+            val items = oper.get_operation_types()
+
+            val arrayAdapter = ArrayAdapter<String>(
+                this.activity.baseContext,
+                android.R.layout.simple_spinner_item,
+                items
+            )
+
+            viewHolder.spin_operation.adapter = arrayAdapter
+            viewHolder.spin_operation.visibility = View.VISIBLE
+        } else {
+            viewHolder.spin_operation.visibility = View.INVISIBLE
+        }
+
+
 
 
         return view as View

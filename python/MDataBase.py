@@ -219,6 +219,26 @@ class Techno(Database):
             return data[0]
         return {}
 
+    def add_device(self, number, decimal="", name="", type=""):
+        if number:
+            dt = self._fetchall(f"select * from devices where serial_number = {number}")
+            if len(dt):
+                return 0
+            fields = "serial_number"
+            values = f"{number}"
+            if decimal:
+                fields += ", decimal_number"
+                values += f", '{decimal}'"
+            if name:
+                fields += ", d_name"
+                values += f", '{name}'"
+            if type:
+                fields += ", d_type"
+                values += f", '{type}'"
+            self._commit(f"insert into devices({fields}) value({values})")
+            return 1
+
+
 
     def delete_device(self, number):
         self._commit(f"delete from operations where serial_number = {number}")
@@ -237,3 +257,15 @@ class Techno(Database):
         if data:
             return data
         return {}
+
+    def get_stages(self):
+        rs = ""
+        for st in self.stages:
+            if rs:
+                rs += "|"
+            rs += st
+        return rs
+
+
+
+        
