@@ -161,6 +161,16 @@ def handler(conn, addr):
 		elif ldata.get(0) == "getoperationtypes":
 			tx = db.get_stages()
 			cn.send(tx)
+		elif ldata.get(0) == "operation":
+			if ldata.get(1) == "add":
+				login = ldata.get(2)
+				number = ldata.get(3)
+				operation = ldata.get(4)
+				if operation:
+					db.add_operation(number, login, operation)
+			elif ldata.get(1) == "delete":
+				pass
+			cn.send('ok')
 		elif ldata.get(0) == "test":
 			cn.send("test_ok")
 		else:

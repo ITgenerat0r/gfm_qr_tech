@@ -6,10 +6,21 @@ class Operation() {
     var worker: String = ""
     var date: String = ""
     var editable: Boolean = false
+    var btn_type: String = "delete"
+
 
 
     fun get_operation_types(): MutableList<String>{
         return this.operation_types
+    }
+
+    fun get_operation_position(type: String): Int{
+        var count = 0
+        for (tp in this.operation_types){
+            if (tp == type) return count
+            count += 1
+        }
+        return 0
     }
 
     fun set_operation_types(items: MutableList<String>){
@@ -40,6 +51,14 @@ class Operation() {
 
     fun set_date(dt: String){
         this.date = dt
+    }
+
+    fun get_btn_type(): String{
+        return this.btn_type
+    }
+
+    fun set_btn_type(tp: String){
+        this.btn_type = tp
     }
 
     fun is_editable():Boolean{

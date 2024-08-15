@@ -180,11 +180,11 @@ class Techno(Database):
 
 
 
-    def __add_operation(self, device_number, worker_login, operation):
+    def add_operation(self, device_number, worker_login, operation):
         values = f"{device_number}, '{operation}', {worker_login}, {self.get_current_time()}"
         self._commit(f"insert into operations(serial_number, operation, worker, dt) values({values})")
 
-    def __delete_operation(self, device_number, operation):
+    def delete_operation(self, device_number, operation):
         self._commit(f"delete from operations where serial_number = {device_number} and operation = '{operation}'")
 
     def get_operation_for_worker(self, login):
@@ -202,7 +202,7 @@ class Techno(Database):
                 key = ls
                 break
         if not key:
-            self.__add_operation(device_number, worker_login, operation)
+            self.add_operation(device_number, worker_login, operation)
             return "new"
         else:
             print("This operation already done!")

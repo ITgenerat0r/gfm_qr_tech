@@ -18,12 +18,12 @@ class DeviceActivity : AppCompatActivity() {
 
     var operations: ArrayList<Operation> = arrayListOf()
     lateinit var listview_operations: ListView
-//    lateinit var pref: SharedPreference
     lateinit var cntr: Controller
     lateinit var pref: SharedPreference
     lateinit var login: String
     private var serial_number: Int = 0
     var operation_types: MutableList<String> = mutableListOf()
+    val groups: ArrayList<String> = arrayListOf()
 
 
 
@@ -54,7 +54,6 @@ class DeviceActivity : AppCompatActivity() {
         cntr = Controller(ip, port)
         // get user groups here ...
         val groups_rx = cntr.send("getworkergroups ${pref.get_str("login")}")
-        val groups: ArrayList<String> = arrayListOf()
         for (g in groups_rx.split('|')){
             groups.add(g)
         }
@@ -96,6 +95,7 @@ class DeviceActivity : AppCompatActivity() {
             title_op.set_date(getString(R.string.date))
             title_op.set_worker(getString(R.string.worker))
             title_op.set_operation(getString(R.string.operation))
+            title_op.set_btn_type("none")
 //            title_op.set_operation("Operation")
 //            title_op.set_worker("Worker")
             operations.add(title_op)
@@ -106,6 +106,21 @@ class DeviceActivity : AppCompatActivity() {
                     Log.d(TAG, "${key[0]}: ${key[1]}")
                     operation.set_field(key[0], key[1])
                 }
+                if ("admins" in groups){
+                    operation.set_editable(true)
+                    operation.set_operation_types(operation_types)
+                } else if ("editors" in groups || "workers" in groups){
+                    if (login == operation.get_worker()){
+                        operation.set_editable(true)
+                        operation.set_operation_types(operation_types)
+                    }
+                }
+                if(operation.get_operation() in operation.get_operation_types() == false){
+                    val ltp = operation.get_operation_types()
+                    ltp.add(operation.get_operation())
+                    operation.set_operation_types(ltp)
+                }
+
                 Log.d(TAG, "=====================")
                 Log.d(TAG, operation.toString())
                 Log.d(TAG, "=====================")
@@ -117,11 +132,15 @@ class DeviceActivity : AppCompatActivity() {
 
         // ====================================================================
 
-        val empty_operation = Operation()
-        empty_operation.set_worker(login)
-        empty_operation.set_editable(true)
-        empty_operation.set_operation_types(operation_types)
-        operations.add(empty_operation)
+        if("workers" in groups || "editors" in groups || "admins" in groups){
+            val empty_operation = Operation()
+            empty_operation.set_worker(login)
+            empty_operation.set_editable(true)
+            empty_operation.set_operation_types(operation_types)
+            empty_operation.set_btn_type("add")
+            operations.add(empty_operation)
+        }
+
         val adapter = DeviceOperationsAdapter(this, operations)
         listview_operations.adapter = adapter
         adapter.notifyDataSetChanged()
