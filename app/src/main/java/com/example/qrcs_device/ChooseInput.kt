@@ -50,7 +50,7 @@ class ChooseInput : AppCompatActivity() {
             val qr_data = pref.get_str("qr_code") // need handler or in onResume()
             // set qr_data to input field
         }
-
+        val pref = SharedPreference(this)
         val btn_apply = findViewById<Button>(R.id.btn_apply)
         btn_apply.setOnClickListener {
             input_number = findViewById<EditText>(R.id.input_serial_number)
@@ -59,7 +59,7 @@ class ChooseInput : AppCompatActivity() {
             if(input_number.text.toString() != ""){
                 serial_number = input_number.text.toString().toInt()
 
-                val pref = SharedPreference(this)
+
                 pref.set_int("serial_number", serial_number)
                 val intent = Intent(this, DeviceActivity::class.java)
                 startActivity(intent)
@@ -73,6 +73,9 @@ class ChooseInput : AppCompatActivity() {
         setSupportActionBar(toolbar)
         val actionBar: ActionBar? = supportActionBar
         actionBar?.setDisplayShowTitleEnabled(false)
+//        actionBar?.setDisplayHomeAsUpEnabled(true)
+        val username = pref.get_str("username")
+        toolbar.title = username
 
         val btn_add_device: Button = findViewById(R.id.btn_add_device)
         btn_add_device.setOnClickListener {

@@ -153,8 +153,13 @@ def handler(conn, addr):
 			print(f"add status: {res}")
 		elif ldata.get(0) == "deletedevice":
 			login = ldata.get(1)
-			number = int(ldata.get(2))
+			number = 0
 			# check login
+			grps = db.get_worker_groups(login)
+			for grp in grps:
+				if grp['g_name'] in {"editor", "admin"}:
+					number = int(ldata.get(2))
+					break
 			if number:
 				db.delete_device(number)
 				print(f"deleted {number}")
