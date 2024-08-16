@@ -20,28 +20,30 @@
         android:id="@+id/textView_op_operation"
         android:layout_width="80dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="16dp"
         android:text="@string/operation"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView_op_date" />
+        app:layout_constraintStart_toEndOf="@+id/textView_op_date"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/textView_op_worker"
         android:layout_width="80dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="150dp"
         android:layout_marginTop="16dp"
         android:text="@string/worker"
-        app:layout_constraintStart_toEndOf="@+id/spinner_op_operation"
+        app:layout_constraintStart_toEndOf="@+id/textView_op_date"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Spinner
         android:id="@+id/spinner_op_operation"
         android:layout_width="130dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toEndOf="@+id/textView_op_date"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/textView_op_operation" />
 
     <Button
         android:id="@+id/btn_row"

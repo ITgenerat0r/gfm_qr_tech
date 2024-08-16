@@ -6,7 +6,7 @@ class Operation() {
     var worker: String = ""
     var date: String = ""
     var editable: Boolean = false
-    var btn_type: String = "delete"
+    var btn_type: String = "none"
 
 
 

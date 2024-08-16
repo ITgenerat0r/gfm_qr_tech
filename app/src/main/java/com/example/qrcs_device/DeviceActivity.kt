@@ -9,6 +9,7 @@ import android.widget.ListView
 import android.widget.TextView
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.widget.Toolbar
+import com.example.qrcs_device.objects.Data
 import com.example.qrcs_device.objects.Device
 import com.example.qrcs_device.objects.Operation
 
@@ -106,13 +107,15 @@ class DeviceActivity : AppCompatActivity() {
                     Log.d(TAG, "${key[0]}: ${key[1]}")
                     operation.set_field(key[0], key[1])
                 }
-                if ("admins" in groups){
+                if ("editors" in groups || "admins" in groups){
                     operation.set_editable(true)
                     operation.set_operation_types(operation_types)
-                } else if ("editors" in groups || "workers" in groups){
+                    operation.set_btn_type("delete")
+                } else if ("workers" in groups){
                     if (login == operation.get_worker()){
                         operation.set_editable(true)
                         operation.set_operation_types(operation_types)
+                        operation.set_btn_type("delete")
                     }
                 }
                 if(operation.get_operation() in operation.get_operation_types() == false){
@@ -140,8 +143,12 @@ class DeviceActivity : AppCompatActivity() {
             empty_operation.set_btn_type("add")
             operations.add(empty_operation)
         }
-
-        val adapter = DeviceOperationsAdapter(this, operations)
+        val data = Data()
+        data.ip = ip
+        data.port = port
+        data.serial_number = serial_number
+        data.login = login
+        val adapter = DeviceOperationsAdapter(this, operations, data)
         listview_operations.adapter = adapter
         adapter.notifyDataSetChanged()
 
@@ -150,6 +157,11 @@ class DeviceActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.device_menu, menu)
+        if (!("admin" in groups || "editors" in groups)){
+            val item = menu?.findItem(R.id.id_delete_device)
+            item?.setVisible(false)
+        }
+
         return super.onCreateOptionsMenu(menu)
     }
 

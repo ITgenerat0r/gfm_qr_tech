@@ -181,11 +181,14 @@ class Techno(Database):
 
 
     def add_operation(self, device_number, worker_login, operation):
-        values = f"{device_number}, '{operation}', {worker_login}, {self.get_current_time()}"
+        values = f"{device_number}, '{operation}', '{worker_login}', '{self.get_current_time()}'"
         self._commit(f"insert into operations(serial_number, operation, worker, dt) values({values})")
 
-    def delete_operation(self, device_number, operation):
-        self._commit(f"delete from operations where serial_number = {device_number} and operation = '{operation}'")
+    def delete_operation(self, device_number, login, operation, date):
+        self._commit(f"delete from operations where serial_number = {device_number} and worker = '{login}' and operation = '{operation}' and dt = '{date}'")
+
+    def delete_operation_by_id(self, id):
+        self._commit(f"delete from operations where id = {id}")
 
     def get_operation_for_worker(self, login):
         return self._fetchall(f"select * from operations where worker = {login}")

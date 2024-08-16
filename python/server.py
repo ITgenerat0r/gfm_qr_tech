@@ -163,13 +163,24 @@ def handler(conn, addr):
 			cn.send(tx)
 		elif ldata.get(0) == "operation":
 			if ldata.get(1) == "add":
-				login = ldata.get(2)
-				number = ldata.get(3)
-				operation = ldata.get(4)
-				if operation:
+				data = ldata.get_from(2).split('|')
+				print(f"len data: {len(data)}")
+				print(data)
+				if len(data) > 2:
+					login = data[0]
+					number = data[1]
+					operation = data[2]
 					db.add_operation(number, login, operation)
 			elif ldata.get(1) == "delete":
-				pass
+				data = ldata.get_from(2).split('|')
+				print(f"len data: {len(data)}")
+				print(data)
+				if len(data) > 3:
+					login = data[0]
+					number = data[1]
+					operation = data[2]
+					date = data[3]
+					db.delete_operation(number, login, operation, date)
 			cn.send('ok')
 		elif ldata.get(0) == "test":
 			cn.send("test_ok")

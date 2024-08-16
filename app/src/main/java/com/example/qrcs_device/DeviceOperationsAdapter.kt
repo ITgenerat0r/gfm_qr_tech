@@ -15,9 +15,10 @@ import android.widget.BaseAdapter
 import android.widget.Button
 import android.widget.Spinner
 import android.widget.TextView
+import com.example.qrcs_device.objects.Data
 import com.example.qrcs_device.objects.Operation
 
-class DeviceOperationsAdapter(private var activity: Activity, private var items: ArrayList<Operation>):
+class DeviceOperationsAdapter(private var activity: Activity, private var items: ArrayList<Operation>, private var data: Data):
 
     BaseAdapter() {
 
@@ -89,12 +90,6 @@ class DeviceOperationsAdapter(private var activity: Activity, private var items:
             R.id.textView_spinner_view,
             items
         )
-        val pos = oper.get_operation_position(oper.get_operation())
-        Log.d(TAG, "Default position ${pos}")
-        viewHolder.spin_operation.setSelection(pos)
-        viewHolder.spin_operation.adapter = arrayAdapter
-
-
 
         if (oper.is_editable()){
 
@@ -113,6 +108,15 @@ class DeviceOperationsAdapter(private var activity: Activity, private var items:
             })
         }
 
+        val pos = oper.get_operation_position(oper.get_operation())
+        Log.d(TAG, "Default position ${pos}")
+        viewHolder.spin_operation.setSelection(pos)
+        viewHolder.spin_operation.adapter = arrayAdapter
+
+
+
+
+
 
 
         if (oper.get_btn_type() == "none"){
@@ -120,18 +124,55 @@ class DeviceOperationsAdapter(private var activity: Activity, private var items:
             viewHolder.spin_operation.visibility = View.INVISIBLE
         } else if (oper.get_btn_type() == "delete"){
             viewHolder.btn_row.setBackgroundResource(R.drawable.baseline_clear_24)
+            viewHolder.spin_operation.visibility = View.GONE
+            viewHolder.txt_operation.visibility = View.VISIBLE
         }else if (oper.get_btn_type() == "add"){
             viewHolder.btn_row.setBackgroundResource(R.drawable.baseline_add_24)
+            viewHolder.spin_operation.visibility = View.VISIBLE
+            viewHolder.txt_operation.visibility = View.GONE
         }
+
+
+        val cntr = Controller(data.ip, data.port)
         viewHolder.btn_row.setOnClickListener {
             Log.d(TAG, "Pressed row button. Position: ${position}. Button type: ${oper.get_btn_type()}.")
-            val pref = SharedPreference(activity.baseContext)
-            val login = pref.get_str("login")
-            val serial_number = pref.get_str("serial_number")
-            val ip = pref.get_str("server_ip")
-            val port = pref.get_int("server_port")
-            val cntr = Controller(ip, port)
-            val rx = cntr.send("operation ${oper.get_btn_type()} ${login} ${serial_number} ${viewHolder.spin_operation.selectedItem}")
+            if (oper.get_btn_type() == "delete"){
+                Log.d(TAG, "= delete")
+                val rx = cntr.send("operation ${oper.get_btn_type()} ${data.login}|${data.serial_number}|${viewHolder.txt_operation.text}|${viewHolder.txt_date.text}")
+                Log.d(TAG, "rx: ${rx}")
+                if (rx == "ok"){
+                    this.items.removeAt(position)
+                    this.notifyDataSetChanged()
+                    Log.d(TAG, "deleted")
+                }
+
+            } else if (oper.get_btn_type() == "add"){
+                Log.d(TAG, "= add")
+                val rx = cntr.send("operation ${oper.get_btn_type()} ${data.login}|${data.serial_number}|${viewHolder.spin_operation.selectedItem}")
+                Log.d(TAG, "rx: ${rx}")
+                if (rx == "ok"){
+                    this.items.get(position).set_btn_type("delete")
+                    this.items.get(position).set_operation(viewHolder.spin_operation.selectedItem.toString())
+                    this.items.get(position).set_date("2000-01-01")
+
+
+                    val operation_types: MutableList<String> = mutableListOf()
+                    val op_types = cntr.send("getoperationtypes")
+                    for (st in op_types.split('|')){
+                        operation_types.add(st)
+                    }
+                    val empty_operation = Operation()
+                    empty_operation.set_worker(data.login)
+                    empty_operation.set_editable(true)
+                    empty_operation.set_operation_types(operation_types)
+                    empty_operation.set_btn_type("add")
+                    this.items.add(empty_operation)
+
+                    this.notifyDataSetChanged()
+                    Log.d(TAG, "added")
+                }
+            }
+
         }
 
 
