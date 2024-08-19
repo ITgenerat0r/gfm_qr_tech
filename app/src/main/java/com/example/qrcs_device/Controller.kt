@@ -16,6 +16,11 @@ class Controller(ip_address: String, port: Int) {
     private val TAG = "MainActivity"
     private var server_ip = ip_address
     private var server_port = port
+    private val security: Security
+
+    init {
+        security = Security()
+    }
 //    private var socket: Socket = Socket(server_ip, server_port)
 
     fun set_ip(ip: String){
@@ -78,5 +83,9 @@ class Controller(ip_address: String, port: Int) {
         val rrr: String = queue.take()
         Log.d(TAG, "Received bit: $rrr")
         return rrr
+    }
+
+    fun test(){
+        security.test() // debug
     }
 }

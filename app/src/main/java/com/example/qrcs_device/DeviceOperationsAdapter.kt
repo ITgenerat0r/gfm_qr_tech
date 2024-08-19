@@ -17,6 +17,9 @@ import android.widget.Spinner
 import android.widget.TextView
 import com.example.qrcs_device.objects.Data
 import com.example.qrcs_device.objects.Operation
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class DeviceOperationsAdapter(private var activity: Activity, private var items: ArrayList<Operation>, private var data: Data):
 
@@ -151,9 +154,11 @@ class DeviceOperationsAdapter(private var activity: Activity, private var items:
                 val rx = cntr.send("operation ${oper.get_btn_type()} ${data.login}|${data.serial_number}|${viewHolder.spin_operation.selectedItem}")
                 Log.d(TAG, "rx: ${rx}")
                 if (rx == "ok"){
+                    val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+                    val currentDate: String = sdf.format(Date())
                     this.items.get(position).set_btn_type("delete")
                     this.items.get(position).set_operation(viewHolder.spin_operation.selectedItem.toString())
-                    this.items.get(position).set_date("2000-01-01")
+                    this.items.get(position).set_date(currentDate)
 
 
                     val operation_types: MutableList<String> = mutableListOf()

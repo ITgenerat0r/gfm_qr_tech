@@ -1,5 +1,6 @@
 import os
 from includes import green_text, yellow_text, red_text, blue_text
+from security import Security
 
 
 # for exchange between client and server
@@ -10,6 +11,7 @@ class Controller():
 		self.__logs = logs
 		self.__package_size = 1024
 		self.__code_size = 2
+		self.__cipher = Security(self.__logs)
 
 
 	def __prt(self, text=""):
