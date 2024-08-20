@@ -18,6 +18,7 @@ class Security {
     fun generateAESKey(keySize: Int = 256): SecretKey {
         val keyGenerator = KeyGenerator.getInstance("AES")
         keyGenerator.init(keySize)
+        Log.d(TAG, "keygenerator: ${keyGenerator}")
         return keyGenerator.generateKey()
     }
 

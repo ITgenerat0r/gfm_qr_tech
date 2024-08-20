@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
     val version = "1.0"
 
     var ip = "192.168.47.252"
-    var port = 2048
+    var port = 11200
     val cntr = Controller(ip, port)
 
 

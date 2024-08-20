@@ -15,7 +15,7 @@ import Config
 version = "0.1"
 
 HOST = '0.0.0.0'  # Standard loopback interface address (localhost)
-PORT = 2048      # Port to listen on (non-privileged ports are > 1023)
+PORT = 11200      # Port to listen on (non-privileged ports are > 1023)
 
 
 
