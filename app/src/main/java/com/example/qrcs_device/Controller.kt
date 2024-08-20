@@ -1,8 +1,11 @@
 package com.example.qrcs_device
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.os.HandlerThread
 import android.util.Log
+import androidx.annotation.RequiresApi
+import com.example.qrcs_device.objects.AESDemo
 import java.io.BufferedWriter
 import java.io.IOException
 import java.io.OutputStreamWriter
@@ -85,7 +88,11 @@ class Controller(ip_address: String, port: Int) {
         return rrr
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun test(){
-        security.test() // debug
+//        security.test() // debug
+        val aes = AESDemo
+        aes.setKey("develop")
+        aes.test(arrayOf())
     }
 }
