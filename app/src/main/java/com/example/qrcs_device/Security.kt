@@ -7,7 +7,7 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.IvParameterSpec
 
 class Security {
-    private val TAG = "Security"
+    private val TAG = "SecurityClass"
     private var aes_key: String
     
     init {

@@ -54,7 +54,6 @@ class Auth : AppCompatActivity() {
 
             if (rx_data.isNotEmpty() && rx_data[0] == "success"){
                 pref.set_str("action", "auth")
-
                 val intent = Intent(this, ChooseInput::class.java)
                 startActivity(intent)
 //                finish()

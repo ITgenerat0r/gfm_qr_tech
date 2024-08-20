@@ -15,6 +15,7 @@ import androidx.appcompat.widget.Toolbar
 
 class MainActivity : AppCompatActivity() {
 
+    val version = "1.0"
 
     var ip = "192.168.47.252"
     var port = 27499
@@ -50,7 +51,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        
+
+        preferences.set_str("version", version)
         preferences.set_str("server_ip", ip)
         preferences.set_int("server_port", port)
 

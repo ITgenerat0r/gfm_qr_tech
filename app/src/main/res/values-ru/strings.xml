@@ -22,4 +22,5 @@
     <string name="add">Add</string>
     <string name="device_not_exist">Нет данных об этом устройстве.</string>
     <string name="something_went_wrong">Что-то пошло не так.</string>
+    <string name="version">Версия приложения</string>
 </resources>

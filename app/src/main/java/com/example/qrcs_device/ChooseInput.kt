@@ -17,11 +17,13 @@ import androidx.appcompat.widget.Toolbar
 
 
 class ChooseInput : AppCompatActivity() {
-    
+
     lateinit var txt_status: TextView
     lateinit var btn_add: Button
     lateinit var input_number: TextView
-    
+    lateinit var txt_version: TextView
+
+
 
     fun logout(){
         val preferences = SharedPreference(this)
@@ -34,8 +36,10 @@ class ChooseInput : AppCompatActivity() {
         val TAG = "ChooseInput"
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choose_input)
-        
+
+
         txt_status = findViewById(R.id.textView_status)
+        txt_version = findViewById(R.id.textView_version)
         btn_add = findViewById(R.id.btn_add_device)
         btn_add.visibility = View.INVISIBLE
 
@@ -69,6 +73,7 @@ class ChooseInput : AppCompatActivity() {
 
         }
 
+        txt_version.text = "${getString(R.string.version)} ${pref.get_str("version")}"
         val toolbar: Toolbar = findViewById(R.id.toolbar_choose_input)
         setSupportActionBar(toolbar)
         val actionBar: ActionBar? = supportActionBar
