@@ -183,6 +183,11 @@ class Techno(Database):
     def add_operation(self, device_number, worker_login, operation):
         values = f"{device_number}, '{operation}', '{worker_login}', '{self.get_current_time()}'"
         self._commit(f"insert into operations(serial_number, operation, worker, dt) values({values})")
+        r = self._fetchall(f"SELECT * FROM operations ORDER BY ID DESC LIMIT 1")
+        if r:
+            return r[0]['id']
+        return 0
+
 
     def delete_operation(self, device_number, login, operation, date):
         self._commit(f"delete from operations where serial_number = {device_number} and worker = '{login}' and operation = '{operation}' and dt = '{date}'")

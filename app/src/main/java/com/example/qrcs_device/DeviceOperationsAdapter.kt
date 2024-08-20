@@ -79,7 +79,7 @@ class DeviceOperationsAdapter(private var activity: Activity, private var items:
 
         viewHolder.txt_operation.text = oper.get_operation()
         viewHolder.txt_date.text = oper.get_date()
-        viewHolder.txt_worker.text = oper.get_worker()
+        viewHolder.txt_worker.text = oper.get_name()
 
 
 
@@ -141,7 +141,8 @@ class DeviceOperationsAdapter(private var activity: Activity, private var items:
             Log.d(TAG, "Pressed row button. Position: ${position}. Button type: ${oper.get_btn_type()}.")
             if (oper.get_btn_type() == "delete"){
                 Log.d(TAG, "= delete")
-                val rx = cntr.send("operation ${oper.get_btn_type()} ${data.login}|${data.serial_number}|${viewHolder.txt_operation.text}|${viewHolder.txt_date.text}")
+//                val rx = cntr.send("operation ${oper.get_btn_type()} ${data.login}|${data.serial_number}|${viewHolder.txt_operation.text}|${viewHolder.txt_date.text}")
+                val rx = cntr.send("operation delete ${oper.get_id()}")
                 Log.d(TAG, "rx: ${rx}")
                 if (rx == "ok"){
                     this.items.removeAt(position)
@@ -153,10 +154,13 @@ class DeviceOperationsAdapter(private var activity: Activity, private var items:
                 Log.d(TAG, "= add")
                 val rx = cntr.send("operation ${oper.get_btn_type()} ${data.login}|${data.serial_number}|${viewHolder.spin_operation.selectedItem}")
                 Log.d(TAG, "rx: ${rx}")
-                if (rx == "ok"){
+                val rx_data = rx.split(' ')
+                if (rx_data[0] == "ok"){
                     val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
                     val currentDate: String = sdf.format(Date())
+                    this.items.get(position).set_id(rx_data[1].toInt())
                     this.items.get(position).set_btn_type("delete")
+                    this.items.get(position).set_name(data.username)
                     this.items.get(position).set_operation(viewHolder.spin_operation.selectedItem.toString())
                     this.items.get(position).set_date(currentDate)
 

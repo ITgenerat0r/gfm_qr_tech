@@ -124,7 +124,11 @@ def handler(conn, addr):
 			for o in ops:
 				if len(tx) > 0:
 					tx += "•"
-				tx += f"date:{o['dt']}|worker:{o['worker']}|operation:{o['operation']}"
+				w = db.get_worker(o['worker'])
+				name = o['worker']
+				if w:
+					name = w['w_name']
+				tx += f"id:{o['id']}|date:{o['dt']}|worker:{o['worker']}|name:{name}|operation:{o['operation']}"
 			if not tx:
 				tx = "none"
 			cn.send(tx)
@@ -167,6 +171,7 @@ def handler(conn, addr):
 			tx = db.get_stages()
 			cn.send(tx)
 		elif ldata.get(0) == "operation":
+			resp = ""
 			if ldata.get(1) == "add":
 				data = ldata.get_from(2).split('|')
 				print(f"len data: {len(data)}")
@@ -175,18 +180,10 @@ def handler(conn, addr):
 					login = data[0]
 					number = data[1]
 					operation = data[2]
-					db.add_operation(number, login, operation)
+					resp = f" {db.add_operation(number, login, operation)}"
 			elif ldata.get(1) == "delete":
-				data = ldata.get_from(2).split('|')
-				print(f"len data: {len(data)}")
-				print(data)
-				if len(data) > 3:
-					login = data[0]
-					number = data[1]
-					operation = data[2]
-					date = data[3]
-					db.delete_operation(number, login, operation, date)
-			cn.send('ok')
+				db.delete_operation_by_id(ldata.get(2))
+			cn.send(f'ok{resp}')
 		elif ldata.get(0) == "test":
 			cn.send("test_ok")
 		else:

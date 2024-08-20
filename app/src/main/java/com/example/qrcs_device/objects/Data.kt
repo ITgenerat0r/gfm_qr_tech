@@ -5,4 +5,5 @@ class Data {
     var port: Int = 0
     var serial_number = 0
     var login = ""
+    var username = ""
 }

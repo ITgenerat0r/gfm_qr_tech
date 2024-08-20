@@ -1,14 +1,31 @@
 package com.example.qrcs_device.objects
 
 class Operation() {
+    var id: Int = 0
     var operation: String = ""
     var operation_types = mutableListOf<String>()
     var worker: String = ""
     var date: String = ""
     var editable: Boolean = false
     var btn_type: String = "none"
+    var name: String = ""
 
 
+    fun get_id(): Int{
+        return this.id
+    }
+
+    fun set_id(new_id: Int){
+        this.id = new_id
+    }
+
+    fun get_name(): String{
+        return this.name
+    }
+
+    fun set_name(nm: String){
+        this.name = nm
+    }
 
     fun get_operation_types(): MutableList<String>{
         return this.operation_types
@@ -73,6 +90,8 @@ class Operation() {
         if (key == "date") return this.date
         if (key == "worker") return this.worker
         if (key == "operation") return this.operation
+        if (key == "name") return this.name
+        if (key == "id") return this.id.toString()
         return ""
     }
 
@@ -83,12 +102,18 @@ class Operation() {
             this.worker = value
         } else if (key == "operation"){
             this.operation = value
+        } else if (key == "name") {
+            this.name = value
+        } else if (key == "id"){
+            this.id = value.toInt()
         }
     }
 
     override fun toString(): String {
-        return "Operation(operation='$operation', worker='$worker', date='$date')"
+        return "Operation(id=$id, operation='$operation', worker='$worker', date='$date', editable=$editable, name='$name')"
     }
+
+
 
 
 

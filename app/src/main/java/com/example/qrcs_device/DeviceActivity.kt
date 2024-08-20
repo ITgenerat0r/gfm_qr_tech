@@ -148,6 +148,7 @@ class DeviceActivity : AppCompatActivity() {
         data.port = port
         data.serial_number = serial_number
         data.login = login
+        data.username = pref.get_str("username")
         val adapter = DeviceOperationsAdapter(this, operations, data)
         listview_operations.adapter = adapter
         adapter.notifyDataSetChanged()
