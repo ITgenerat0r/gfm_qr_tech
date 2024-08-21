@@ -18,27 +18,10 @@ class Security():
 
 
 	def str2hex(self, data):
-		res = ""
-		for i in data:
-			# print(hex(i))
-			add = f"{hex(i)}"[2:]
-			# print(add)
-			while len(add) < 2:
-				add = f"0{add}"
-			res += add
-		return res
+		return f"{data.hex()}"
 
 	def hex2str(self, data):
-		res = b'' + bytes.fromhex(data)
-		# sw = False
-		# add = 16
-		# for i in data:
-		# 	if sw:
-		# 		sw = False
-		# 	else:
-		# 		sw = True
-		# res += add
-		return res
+		return b'' + bytes.fromhex(data)
 
 
 
