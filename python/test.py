@@ -1,7 +1,8 @@
 
 
-from MDataBase import Warehouse
+dt = b''
 
 
+dt += bytes.fromhex("ffad")
 
-wh = Warehouse()
+print(dt)

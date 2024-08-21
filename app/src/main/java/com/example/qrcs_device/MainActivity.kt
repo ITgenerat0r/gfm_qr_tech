@@ -20,6 +20,7 @@ class MainActivity : AppCompatActivity() {
     var ip = "192.168.47.252"
     var port = 11200
     val cntr = Controller(ip, port)
+    var aes_key = "develop"
 
 
     val TAG = "MainActivity"

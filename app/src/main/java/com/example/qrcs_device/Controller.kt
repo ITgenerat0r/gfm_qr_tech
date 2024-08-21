@@ -20,9 +20,12 @@ class Controller(ip_address: String, port: Int) {
     private var server_ip = ip_address
     private var server_port = port
     private val security: Security
+    val aes = AESDemo
+    val aes_key = "develop"
 
     init {
         security = Security()
+//        aes.setKey(aes_key)
     }
 //    private var socket: Socket = Socket(server_ip, server_port)
 
@@ -38,8 +41,10 @@ class Controller(ip_address: String, port: Int) {
 //        socket = Socket(server_ip, server_port)
 //    }
 
-    fun send(data: String): String{
-        return send_bit("e_$data").substring(2)
+    fun send(data_clear: String): String{
+        val data = aes.encrypt(data_clear, aes_key)
+        val r =  send_bit("e_$data").substring(2)
+        return "${aes.decrypt(r, aes_key)}"
     }
 
     private fun send_bit(data: String): String{

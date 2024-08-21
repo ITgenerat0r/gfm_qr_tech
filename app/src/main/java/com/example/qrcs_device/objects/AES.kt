@@ -66,9 +66,9 @@ object AESDemo {
     @JvmStatic
     fun test(args: Array<String>) {
         // key
-        val secretKey = "secretkey"
+        val secretKey = "develop00develop"
         // secret text
-        val originalString = "knowledgefactory.net"
+        val originalString = "1234567890"
         // Encryption
         val encryptedString = encrypt(originalString, secretKey)
         // Decryption
