@@ -184,6 +184,8 @@ def handler(conn, addr):
 			elif ldata.get(1) == "delete":
 				db.delete_operation_by_id(ldata.get(2))
 			cn.send(f'ok{resp}')
+		elif ldata.get(0) == "ns":
+			cn.send(cn.get_aes_iv())
 		elif ldata.get(0) == "test":
 			cn.send("test_ok")
 		else:

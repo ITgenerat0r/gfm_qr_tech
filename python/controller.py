@@ -12,6 +12,11 @@ class Controller():
 		self.__package_size = 1024
 		self.__code_size = 2
 		self.__cipher = Security(self.__logs)
+		self.__encryption = False
+
+
+	def enable_encryption(self, stat=True):
+		self.__encryption = stat
 
 
 	def __prt(self, text=""):
@@ -54,3 +59,7 @@ class Controller():
 		return res
 		res_clear = self.__cipher.decrypt(res)
 		return res_clear
+
+
+	def get_aes_iv(self):
+		return self.__cipher.get_iv()
