@@ -1,7 +1,6 @@
 package com.example.qrcs_device
 
 import android.util.Log
-import com.example.qrcs_device.objects.AESDemo
 import java.io.UnsupportedEncodingException
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException

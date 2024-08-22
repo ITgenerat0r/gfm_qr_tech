@@ -5,7 +5,6 @@ import android.os.Build
 import android.os.HandlerThread
 import android.util.Log
 import androidx.annotation.RequiresApi
-import com.example.qrcs_device.objects.AESDemo
 import java.io.BufferedWriter
 import java.io.IOException
 import java.io.OutputStreamWriter
@@ -20,7 +19,6 @@ class Controller(ip_address: String, port: Int) {
     private var server_ip = ip_address
     private var server_port = port
     private val security: Security
-    val aes = AESDemo
     val aes_key = "develop"
 
     init {
