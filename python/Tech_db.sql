@@ -25,6 +25,7 @@ CREATE TABLE user_groups
 (
     id int not null AUTO_INCREMENT,
     g_name varchar(256) not null unique,
+    access int not null,
     CONSTRAINT PK_groups PRIMARY KEY(id)
 );
 
