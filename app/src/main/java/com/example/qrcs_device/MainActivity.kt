@@ -53,6 +53,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+
+        //debug ====================================================================
+        val ss = Security()
+        ss.test()
+
         preferences.set_str("version", version)
         preferences.set_str("server_ip", ip)
         preferences.set_int("server_port", port)

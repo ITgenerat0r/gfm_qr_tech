@@ -42,9 +42,11 @@ class Controller(ip_address: String, port: Int) {
 //    }
 
     fun send(data_clear: String): String{
-        val data = aes.encrypt(data_clear, aes_key)
-        val r =  send_bit("e_$data").substring(2)
-        return "${aes.decrypt(r, aes_key)}"
+//        val data = aes.encrypt(data_clear, aes_key)
+//        val r =  send_bit("e_$data").substring(2)
+//        return "${aes.decrypt(r, aes_key)}"
+
+        return send_bit("e_$data_clear").substring(2)
     }
 
     private fun send_bit(data: String): String{
@@ -96,8 +98,10 @@ class Controller(ip_address: String, port: Int) {
     @RequiresApi(Build.VERSION_CODES.O)
     fun test(){
 //        security.test() // debug
-        val aes = AESDemo
-        aes.setKey("develop")
-        aes.test(arrayOf())
+
+
+//        val aes = AESDemo
+//        aes.setKey("develop")
+//        aes.test(arrayOf())
     }
 }

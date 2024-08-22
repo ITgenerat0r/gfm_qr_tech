@@ -34,7 +34,6 @@ class Auth : AppCompatActivity() {
             val ip = pref.get_str("server_ip")
             val port = pref.get_int("server_port")
             val cntr = Controller(ip, port)
-            cntr.test() // debug
             val login_i = login_input.text
             val passwd = passwd_input.text
             // sign in here

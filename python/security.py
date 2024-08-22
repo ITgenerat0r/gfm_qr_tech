@@ -35,28 +35,46 @@ class Security():
 		return s[: -ord(s[len(s) - 1 :])]
 
 
-	def encrypt(self, plain_text, key=""):
-		if not key:
-			key = self.__aes_key
+	# def encrypt(self, plain_text, key):
+	# 	private_key = hashlib.sha256(key.encode("utf-8")).digest()
+	# 	plain_text = self.__pad(plain_text)
+	# 	# print("After padding:", plain_text)
+	# 	iv = Random.new().read(AES.block_size)
+	# 	cipher = AES.new(private_key, AES.MODE_CBC, iv)
+	# 	res = base64.b64encode(iv + cipher.encrypt(plain_text.encode('utf-8')))
+	# 	return self.str2hex(res)
+
+
+	# def decrypt(self, data, key):
+	# 	cipher_text = self.hex2str(data)
+	# 	private_key = hashlib.sha256(key.encode("utf-8")).digest()
+	# 	cipher_text = base64.b64decode(cipher_text)
+	# 	iv = cipher_text[:16]
+	# 	cipher = AES.new(private_key, AES.MODE_CBC, iv)
+	# 	return self.__unpad(cipher.decrypt(cipher_text[16:]))
+
+	def encrypt(self, plain_text, key):
+		print(f"key: {self.str2hex(key.encode('utf-8'))}")
 		private_key = hashlib.sha256(key.encode("utf-8")).digest()
+		print("private_key: ", self.str2hex(private_key))
 		plain_text = self.__pad(plain_text)
 		# print("After padding:", plain_text)
-		iv = Random.new().read(AES.block_size)
-		print(f"iv: {self.str2hex(iv)}")
-		cipher = AES.new(private_key, AES.MODE_CBC)
-		encrypted_text = base64.b64encode(iv + cipher.encrypt(plain_text.encode('utf-8')))
-		print(f"TEST: {self.str2hex(cipher.encrypt(plain_text.encode('utf-8')))}")
-		print(f"Encrypted text: {encrypted_text}")
-		return self.str2hex(encrypted_text)
+		# iv = Random.new().read(AES.block_size)
+		iv = self.hex2str('c33bfeae1263c98633bc9e66c6ab8746')
+		cipher = AES.new(private_key, AES.MODE_CBC, iv)
+		# res = base64.b64encode(iv + cipher.encrypt(plain_text.encode('utf-8')))
+		enc_data = cipher.encrypt(plain_text.encode('utf-8'))
+		res = iv + enc_data
+		print(f"only encrypted {self.str2hex(enc_data)}")
+		for e in enc_data:
+			print(e)
+		return self.str2hex(res)
 
 
-	def decrypt(self, data, key=""):
-		cipher_text = b'' + self.hex2str(data)
-		print("Encrypted test:", cipher_text)
-		if not key:
-			key = self.__aes_key
+	def decrypt(self, data, key):
+		cipher_text = self.hex2str(data)
 		private_key = hashlib.sha256(key.encode("utf-8")).digest()
-		cipher_text = base64.b64decode(cipher_text)
+		# cipher_text = base64.b64decode(cipher_text)
 		iv = cipher_text[:16]
 		cipher = AES.new(private_key, AES.MODE_CBC, iv)
 		return self.__unpad(cipher.decrypt(cipher_text[16:]))
@@ -65,7 +83,7 @@ class Security():
 
 cp = Security()
 message = "asdfasdf"
-key = "develop00develop"
+key = "develop"
 encrypted_msg = cp.encrypt(message, key)
 print("Encrypted Message:", encrypted_msg)
 decrypted_msg = cp.decrypt(encrypted_msg, key)
