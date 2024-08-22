@@ -14,9 +14,14 @@ import javax.crypto.spec.SecretKeySpec
 class Security {
     private val TAG = "SecurityClass"
     private var aes_key: String
+    private var secret_key: SecretKey
+    private var ivParameterSpec: IvParameterSpec
     
     init {
         aes_key = "develop"
+        secret_key = setKey(aes_key)
+        ivParameterSpec = IvParameterSpec(byteArrayOf(0xc3.toByte(), 0x3b.toByte(), 0xfe.toByte(), 0xae.toByte(), 0x12.toByte(), 0x63.toByte(), 0xc9.toByte(), 0x86.toByte(), 0x33.toByte(), 0xbc.toByte(), 0x9e.toByte(), 0x66.toByte(), 0xc6.toByte(), 0xab.toByte(), 0x87.toByte(), 0x46.toByte()))
+
     }
 
 
@@ -47,6 +52,14 @@ class Security {
         return res
     }
 
+    fun hash_sha256(data: String): String{
+        var key = data.toByteArray(charset("UTF-8"))
+        val sha = MessageDigest.getInstance("SHA-256")
+        key = sha.digest(key)
+        key = Arrays.copyOf(key, 32)
+        return  this.bytes2hexstr(key)
+    }
+
 
     fun generateAESKey(keySize: Int = 256): SecretKey {
         val keyGenerator = KeyGenerator.getInstance("AES")
@@ -66,22 +79,31 @@ class Security {
         return secretKey
     }
 
+    fun set_iv(new_iv: String){
+        this.ivParameterSpec = IvParameterSpec(this.hexstr2bytes(new_iv))
+    }
+
+
+    fun get_iv(): String{
+        return this.bytes2hexstr(this.ivParameterSpec.iv)
+    }
+
 
 
     fun aesEncrypt(data: ByteArray, secretKey: SecretKey): ByteArray {
         val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
 //        val ivParameterSpec = IvParameterSpec(ByteArray(16)) // Use a secure IV in production
-        val ivParameterSpec = IvParameterSpec(byteArrayOf(0xc3.toByte(), 0x3b.toByte(), 0xfe.toByte(), 0xae.toByte(), 0x12.toByte(), 0x63.toByte(), 0xc9.toByte(), 0x86.toByte(), 0x33.toByte(), 0xbc.toByte(), 0x9e.toByte(), 0x66.toByte(), 0xc6.toByte(), 0xab.toByte(), 0x87.toByte(), 0x46.toByte()))
-        Log.d(TAG,"iv ${bytes2hexstr(ivParameterSpec.iv)}")
+//        val ivParameterSpec = IvParameterSpec(byteArrayOf(0xc3.toByte(), 0x3b.toByte(), 0xfe.toByte(), 0xae.toByte(), 0x12.toByte(), 0x63.toByte(), 0xc9.toByte(), 0x86.toByte(), 0x33.toByte(), 0xbc.toByte(), 0x9e.toByte(), 0x66.toByte(), 0xc6.toByte(), 0xab.toByte(), 0x87.toByte(), 0x46.toByte()))
+        Log.d(TAG,"iv ${bytes2hexstr(this.ivParameterSpec.iv)}")
         Log.d(TAG, "secretKey ${bytes2hexstr(secretKey.encoded)}")
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey, ivParameterSpec)
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey, this.ivParameterSpec)
         return cipher.doFinal(data)
     }
 
     fun aesDecrypt(encryptedData: ByteArray, secretKey: SecretKey): ByteArray {
         val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
-        val ivParameterSpec = IvParameterSpec(byteArrayOf(0xc3.toByte(), 0x3b.toByte(), 0xfe.toByte(), 0xae.toByte(), 0x12.toByte(), 0x63.toByte(), 0xc9.toByte(), 0x86.toByte(), 0x33.toByte(), 0xbc.toByte(), 0x9e.toByte(), 0x66.toByte(), 0xc6.toByte(), 0xab.toByte(), 0x87.toByte(), 0x46.toByte())) // Use the same IV as used in encryption
-        cipher.init(Cipher.DECRYPT_MODE, secretKey, ivParameterSpec)
+//        val ivParameterSpec = IvParameterSpec(byteArrayOf(0xc3.toByte(), 0x3b.toByte(), 0xfe.toByte(), 0xae.toByte(), 0x12.toByte(), 0x63.toByte(), 0xc9.toByte(), 0x86.toByte(), 0x33.toByte(), 0xbc.toByte(), 0x9e.toByte(), 0x66.toByte(), 0xc6.toByte(), 0xab.toByte(), 0x87.toByte(), 0x46.toByte())) // Use the same IV as used in encryption
+        cipher.init(Cipher.DECRYPT_MODE, secretKey, this.ivParameterSpec)
         return cipher.doFinal(encryptedData)
     }
 

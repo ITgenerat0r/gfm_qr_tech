@@ -26,10 +26,10 @@ class Security():
 
 
 	def set_iv(self, new_iv):
-		self.iv = self.hex2str(new_iv)
+		self.__iv = self.hex2str(new_iv)
 
 	def get_iv(self):
-		return self.str2hex(self.iv)
+		return self.str2hex(self.__iv)
 
 
 
@@ -51,23 +51,21 @@ class Security():
 		# iv = Random.new().read(AES.block_size)
 		# iv = self.hex2str('c33bfeae1263c98633bc9e66c6ab8746')
 
-		cipher = AES.new(private_key, AES.MODE_CBC, self.iv)
+		cipher = AES.new(private_key, AES.MODE_CBC, self.__iv)
 		# res = base64.b64encode(iv + cipher.encrypt(plain_text.encode('utf-8')))
 		enc_data = cipher.encrypt(plain_text.encode('utf-8'))
-		res = self.iv + enc_data
-		print(f"only encrypted {self.str2hex(enc_data)}")
-		for e in enc_data:
-			print(e)
-		return self.str2hex(res)
+		# res = self.__iv + enc_data
+		# print(f"only encrypted {self.str2hex(enc_data)}")
+		return self.str2hex(enc_data)
 
 
 	def decrypt(self, data, key):
 		cipher_text = self.hex2str(data)
 		private_key = hashlib.sha256(key.encode("utf-8")).digest()
 		# cipher_text = base64.b64decode(cipher_text)
-		iv = cipher_text[:16]
-		cipher = AES.new(private_key, AES.MODE_CBC, iv)
-		return self.__unpad(cipher.decrypt(cipher_text[16:]))
+		# iv = cipher_text[:16]
+		cipher = AES.new(private_key, AES.MODE_CBC, self.__iv)
+		return self.__unpad(cipher.decrypt(cipher_text))
 
 
 

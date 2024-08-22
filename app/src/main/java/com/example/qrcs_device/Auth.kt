@@ -35,16 +35,17 @@ class Auth : AppCompatActivity() {
             val port = pref.get_int("server_port")
             val cntr = Controller(ip, port)
             val login_i = login_input.text
-            val passwd = passwd_input.text
+            val ss = Security()
+            val hash = ss.hash_sha256(passwd_input.text.toString())
             // sign in here
-            val rq = "lg ${login_i} ${passwd}"
+            val rq = "lg ${login_i} ${hash}"
             Log.d(TAG, String.format("tx: %s", rq))
             val rx = cntr.send(rq)
             Log.d(TAG, String.format("rx: %s", rx))
 
 
             pref.set_str("login", login_i.toString())
-            pref.set_str("passwd", passwd.toString())
+            pref.set_str("passwd", hash)
 
             val rx_data = rx.split(' ')
             if (rx_data.size > 1){

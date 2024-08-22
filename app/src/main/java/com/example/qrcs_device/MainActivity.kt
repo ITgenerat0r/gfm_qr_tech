@@ -11,6 +11,8 @@ import android.widget.TextView
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import java.security.MessageDigest
+import java.util.Arrays
 
 
 class MainActivity : AppCompatActivity() {
@@ -64,12 +66,13 @@ class MainActivity : AppCompatActivity() {
 
         Log.d(TAG, "onCreate()")
         val login = preferences.get_str("login");
-        val password = preferences.get_str("passwd");
-        val rq = "lg ${login} ${password}"
+        val hash = preferences.get_str("passwd");
+        Log.d(TAG, "HASH: $hash")
+        val rq = "lg ${login} ${hash}"
         Log.d(TAG, String.format("tx: %s", rq))
         val rx = cntr.send(rq)
         Log.d(TAG, String.format("rx: %s", rx))
-        if (login == "" || password == "" || rx == "error"){
+        if (login == "" || hash == "" || rx == "error"){
             val intent = Intent(this, Auth::class.java)
             startActivity(intent)
         } else {
