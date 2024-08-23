@@ -91,9 +91,9 @@ class Controller(ip_address: String, port: Int, context: Context) {
         val rx = send_bit("e_$session_str$sdata").substring(2)
 
         if (encryption_enabled){
-            security.set_iv(sdata)
+            security.set_iv(sdata.substring(sdata.length-32))
             val rdata = security.aesDecrypt(rx)
-            pref.set_str("iv", rx)
+            pref.set_str("iv", rx.substring(rx.length-32))
             return rdata
         }
 
