@@ -116,7 +116,7 @@ class ChooseInput : AppCompatActivity() {
         if (d_status == "none"){
             val ip = pref.get_str("server_ip")
             val port = pref.get_int("server_port")
-            val cntr = Controller(ip, port)
+            val cntr = Controller(ip, port, this)
             val groups_rx = cntr.send("getworkergroups ${pref.get_str("login")}")
             val groups: ArrayList<String> = arrayListOf()
             for (g in groups_rx.split('|')){

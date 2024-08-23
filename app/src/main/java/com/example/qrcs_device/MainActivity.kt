@@ -57,8 +57,8 @@ class MainActivity : AppCompatActivity() {
 
 
         //debug ====================================================================
-//        val ss = Security()
-//        ss.test()
+        val ss = Security()
+        ss.test()
         val session = preferences.get_int("session")
         if (session == 0){
             val intent = Intent(this, Auth::class.java)

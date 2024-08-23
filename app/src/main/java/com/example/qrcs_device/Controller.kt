@@ -16,26 +16,50 @@ import java.util.concurrent.LinkedBlockingQueue
 
 class Controller(ip_address: String, port: Int, context: Context) {
 
-    private val TAG = "MainActivity"
+    private val TAG = "SecurityClass"
     private var server_ip = ip_address
     private var server_port = port
     private val security: Security
-    var aes_key = "develop"
-    var session_id = 0
-    val pref: SharedPreference = SharedPreference(context)
+    private var aes_key = "develop"
+    private var session_id = 0
+    private val pref: SharedPreference
+    private var iv = ""
+    private var encryption_enabled = false
 
 
     init {
+        Log.d(TAG, "INIT")
+        Log.d(TAG, "Security...")
         security = Security()
+        Log.d(TAG, "SharedPreferences...")
+        pref  = SharedPreference(context)
+        Log.d(TAG, "Get strings...")
         session_id = pref.get_int("session")
         server_ip = pref.get_str("server_ip")
         server_port = pref.get_int("server_port")
+
+        Log.d(TAG, "Set session...")
+        if (session_id == 0){
+            val rx = send("ns")
+            val data_rx = rx.split(' ')
+            if (data_rx.size > 1){
+                session_id = data_rx[0].toInt()
+                iv = data_rx[1]
+                pref.set_str("iv", iv)
+                enable_encryption()
+            }
+
+        }
+        Log.d(TAG, "INIT Done")
 
 //        aes.setKey(aes_key)
     }
 //    private var socket: Socket = Socket(server_ip, server_port)
 
 
+    fun enable_encryption(s: Boolean = true){
+        this.encryption_enabled = s
+    }
     fun set_ip(ip: String){
         server_ip = ip
     }
@@ -48,12 +72,32 @@ class Controller(ip_address: String, port: Int, context: Context) {
 //        socket = Socket(server_ip, server_port)
 //    }
 
-    fun send(data_clear: String): String{
+    fun send(data: String): String{
 //        val data = aes.encrypt(data_clear, aes_key)
 //        val r =  send_bit("e_$data").substring(2)
 //        return "${aes.decrypt(r, aes_key)}"
 
-        return send_bit("e_$data_clear").substring(2)
+        var sdata = data
+        if (encryption_enabled){
+            val iv = pref.get_str("iv")
+            security.set_iv(iv)
+            sdata = security.aesEncrypt(data)
+//            pref.set_str("iv", sdata)
+        }
+        var session_str = ""
+        if (session_id > 0){
+            session_str = "$session_id "
+        }
+        val rx = send_bit("e_$session_str$sdata").substring(2)
+
+        if (encryption_enabled){
+            security.set_iv(sdata)
+            val rdata = security.aesDecrypt(rx)
+            pref.set_str("iv", rx)
+            return rdata
+        }
+
+        return rx
     }
 
     private fun send_bit(data: String): String{
@@ -64,12 +108,12 @@ class Controller(ip_address: String, port: Int, context: Context) {
                 val socket = Socket(server_ip, server_port)
                 val out = PrintWriter(
                     BufferedWriter(
-                        OutputStreamWriter(socket!!.getOutputStream())
+                        OutputStreamWriter(socket.getOutputStream())
                     ),
                     true
                 )
                 out.println(data)
-                Log.d(TAG, "Sended!")
+                Log.d(TAG, "Sended: $data")
 
 //              we can get response here
                 val inputStream = socket.getInputStream()
@@ -77,7 +121,7 @@ class Controller(ip_address: String, port: Int, context: Context) {
                 val bytesRead = inputStream.read(buffer)
                 val response = String(buffer, 0, bytesRead)
 
-                Log.d(TAG, String.format("Received: %s", response))
+                Log.d(TAG, "Received: $response")
                 res = response
 
             } catch (e: UnknownHostException) {

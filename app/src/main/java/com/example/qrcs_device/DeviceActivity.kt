@@ -52,7 +52,7 @@ class DeviceActivity : AppCompatActivity() {
 
         val ip = pref.get_str("server_ip")
         val port = pref.get_int("server_port")
-        cntr = Controller(ip, port)
+        cntr = Controller(ip, port, this)
         // get user groups here ...
         val groups_rx = cntr.send("getworkergroups ${pref.get_str("login")}")
         for (g in groups_rx.split('|')){
@@ -149,7 +149,7 @@ class DeviceActivity : AppCompatActivity() {
         data.serial_number = serial_number
         data.login = login
         data.username = pref.get_str("username")
-        val adapter = DeviceOperationsAdapter(this, operations, data)
+        val adapter = DeviceOperationsAdapter(this, operations, data, this)
         listview_operations.adapter = adapter
         adapter.notifyDataSetChanged()
 

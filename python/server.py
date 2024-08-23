@@ -74,11 +74,12 @@ def handler(conn, addr):
 			iv = cn.get_new_iv()
 			session_id = db.new_session(iv=iv)
 			cn.send(f"{session_id} {iv}")
-		else:
+		elif data.find(' ') >= 0:
 			sp = LData(data)
 			session_id = sp.get(0)
-			en_data - sp.get(1)
+			en_data = sp.get(1)
 			session = db.get_session(session_id)
+			print(session)
 			iv = session['iv']
 			aes_key = session['aes_key']
 			cn.set_iv(iv)
@@ -204,6 +205,9 @@ def handler(conn, addr):
 				cn.send('ok')
 			iv = cn.get_iv()
 			db.set_iv(session_id, iv)
+
+		else:
+			cn.send('bad')
 
 
 

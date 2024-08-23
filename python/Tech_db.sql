@@ -58,3 +58,7 @@ CREATE TABLE sessions
     date_last_conn datetime,
     CONSTRAINT PK_sessions PRIMARY KEY (id)
 );
+
+
+
+

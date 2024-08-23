@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class DeviceOperationsAdapter(private var activity: Activity, private var items: ArrayList<Operation>, private var data: Data):
+class DeviceOperationsAdapter(private var activity: Activity, private var items: ArrayList<Operation>, private var data: Data, private val context: Context):
 
     BaseAdapter() {
 
@@ -136,7 +136,7 @@ class DeviceOperationsAdapter(private var activity: Activity, private var items:
         }
 
 
-        val cntr = Controller(data.ip, data.port)
+        val cntr = Controller(data.ip, data.port, context)
         viewHolder.btn_row.setOnClickListener {
             Log.d(TAG, "Pressed row button. Position: ${position}. Button type: ${oper.get_btn_type()}.")
             if (oper.get_btn_type() == "delete"){

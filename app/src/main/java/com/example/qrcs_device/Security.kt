@@ -1,5 +1,6 @@
 package com.example.qrcs_device
 
+import android.content.Context
 import android.util.Log
 import java.io.UnsupportedEncodingException
 import java.security.MessageDigest
@@ -11,7 +12,7 @@ import javax.crypto.SecretKey
 import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
-class Security {
+class Security() {
     private val TAG = "SecurityClass"
     private var aes_key: String
     private var secret_key: SecretKey
@@ -88,23 +89,32 @@ class Security {
         return this.bytes2hexstr(this.ivParameterSpec.iv)
     }
 
+    
 
 
-    fun aesEncrypt(data: ByteArray, secretKey: SecretKey): ByteArray {
+
+    fun aesEncrypt(data: String): String {
+        Log.d(TAG, "ENCRYPT")
+        Log.d(TAG, "data: $data")
         val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
 //        val ivParameterSpec = IvParameterSpec(ByteArray(16)) // Use a secure IV in production
 //        val ivParameterSpec = IvParameterSpec(byteArrayOf(0xc3.toByte(), 0x3b.toByte(), 0xfe.toByte(), 0xae.toByte(), 0x12.toByte(), 0x63.toByte(), 0xc9.toByte(), 0x86.toByte(), 0x33.toByte(), 0xbc.toByte(), 0x9e.toByte(), 0x66.toByte(), 0xc6.toByte(), 0xab.toByte(), 0x87.toByte(), 0x46.toByte()))
-        Log.d(TAG,"iv ${bytes2hexstr(this.ivParameterSpec.iv)}")
-        Log.d(TAG, "secretKey ${bytes2hexstr(secretKey.encoded)}")
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey, this.ivParameterSpec)
-        return cipher.doFinal(data)
+        Log.d(TAG,"iv ${get_iv()}")
+        Log.d(TAG, "secretKey ${bytes2hexstr(this.secret_key.encoded)}")
+        cipher.init(Cipher.ENCRYPT_MODE, this.secret_key, this.ivParameterSpec)
+        return this.bytes2hexstr(cipher.doFinal(data.toByteArray()))
     }
 
-    fun aesDecrypt(encryptedData: ByteArray, secretKey: SecretKey): ByteArray {
+    fun aesDecrypt(data: String): String {
+        Log.d(TAG, "DECRYPT")
+        Log.d(TAG, "data: $data")
+        Log.d(TAG,"iv ${get_iv()}")
+        Log.d(TAG, "secretKey ${bytes2hexstr(this.secret_key.encoded)}")
+        val encryptedData = this.hexstr2bytes(data)
         val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
 //        val ivParameterSpec = IvParameterSpec(byteArrayOf(0xc3.toByte(), 0x3b.toByte(), 0xfe.toByte(), 0xae.toByte(), 0x12.toByte(), 0x63.toByte(), 0xc9.toByte(), 0x86.toByte(), 0x33.toByte(), 0xbc.toByte(), 0x9e.toByte(), 0x66.toByte(), 0xc6.toByte(), 0xab.toByte(), 0x87.toByte(), 0x46.toByte())) // Use the same IV as used in encryption
-        cipher.init(Cipher.DECRYPT_MODE, secretKey, this.ivParameterSpec)
-        return cipher.doFinal(encryptedData)
+        cipher.init(Cipher.DECRYPT_MODE, this.secret_key, this.ivParameterSpec)
+        return this.bytes2hexstr(cipher.doFinal(encryptedData))
     }
 
 
@@ -114,14 +124,14 @@ class Security {
         val secretKey = setKey("develop")
         Log.d(TAG, "key ${secretKey}")
 
-        val encryptedData = aesEncrypt(originalText.toByteArray(), secretKey)
-        val str_en_data = bytes2hexstr(encryptedData)
+        val encryptedData = aesEncrypt(originalText)
+        val str_en_data = encryptedData
         Log.d(TAG, "Encrypted data:  ${str_en_data}")
-        val bytes_en_data = hexstr2bytes(str_en_data)
-        Log.d(TAG, "Encrypted data2: ${bytes2hexstr(bytes_en_data)}")
+        val bytes_en_data = str_en_data
+        Log.d(TAG, "Encrypted data2: ${bytes_en_data}")
 //        val decrbytes_en_datayptedData = aesDecrypt(encryptedData, secretKey)
-        val decryptedData = aesDecrypt(bytes_en_data, secretKey)
-        val decryptedText = String(decryptedData)
+        val decryptedData = aesDecrypt(bytes_en_data)
+        val decryptedText = decryptedData
 
         Log.d(TAG, "Original text: ${originalText}")
         Log.d(TAG, "Encrypted text: ${encryptedData}")

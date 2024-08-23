@@ -283,7 +283,7 @@ class Techno(Database):
         if aes_key:
             cols += ", aes_key"
             vals += f", '{aes_key}'"
-        self._fetchall(f"insert into sessions ({cols}) value ({vals})")
+        self._commit(f"insert into sessions ({cols}) value ({vals})")
         r = self._fetchall(f"SELECT * FROM sessions ORDER BY ID DESC LIMIT 1")
         if r:
             return r[0]['id']
