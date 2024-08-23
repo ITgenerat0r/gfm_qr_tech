@@ -293,6 +293,14 @@ class Techno(Database):
     def delete_session(self, session_id):
         self._commit(f"delete from sessions where id = {session_id}")
 
+    def delete_old_sessions(self):
+        time = self.get_current_time()
+        time = time[:10]
+        dt = self._fetchall(f"select * from sessions where date_last_conn < '{time}';")
+        for i in dt:
+            self._commit(f"delete from sessions where id = {i['id']}")
+        
+
     def get_session(self, session_id):
         dt = self._fetchall(f"select * from sessions where id = {session_id}")
         if dt:
