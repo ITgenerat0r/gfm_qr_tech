@@ -1,8 +1,7 @@
 
 
-dt = b''
+
+g = "0123456789"
 
 
-dt += bytes.fromhex("ffad")
-
-print(dt)
+print(g[-32:])

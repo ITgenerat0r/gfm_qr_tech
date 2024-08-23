@@ -50,7 +50,7 @@ class Controller():
 		# text = self.__cipher.encrypt(text_clear)
 		if self.__encryption:
 			text = self.encrypt(text)
-			self.__iv = text
+			self.__iv = text[-32:]
 		self.__prt()
 		while len(text) > self.__package_size - self.__code_size:
 			self.__send_bit(f"b_{text[:self.__code_size]}")

@@ -36,11 +36,12 @@ class Security():
 		return s[: -ord(s[len(s) - 1 :])]
 
 
-	def aes_encrypt_block(self, plain_text, key, iv):
-		print("ENCRYPT")
-		print(f"plain_text: {plain_text}")
-		print(f"key: {self.bytes2hexstr(key.encode('utf-8'))}")
-		print(f"iv: {iv}")
+	def encrypt(self, plain_text, key, iv):
+		if self.__logs:
+			print("ENCRYPT")
+			print(f"plain_text: {plain_text}")
+			print(f"key: {self.bytes2hexstr(key.encode('utf-8'))}")
+			print(f"iv: {iv}")
 		private_key = hashlib.sha256(key.encode("utf-8")).digest()
 		# print("private_key: ", self.bytes2hexstr(private_key))
 		plain_text = self.__pad(plain_text)
@@ -55,30 +56,29 @@ class Security():
 		return self.bytes2hexstr(enc_data)
 
 
-	def aes_decrypt_block(self, data, key, iv):
-		print("DECRYPT")
-		print(f"data: {data}")
-		print(f"key: {key}")
-		print(f"iv: {iv}")
+	def decrypt(self, data, key, iv):
+		if self.__logs:
+			print("DECRYPT")
+			print(f"data: {data}")
+			print(f"key: {key}")
+			print(f"iv: {iv}")
 		cipher_text = self.hexstr2bytes(data)
 		private_key = hashlib.sha256(key.encode("utf-8")).digest()
 		# cipher_text = base64.b64decode(cipher_text)
 		# iv = cipher_text[:16]
 		cipher = AES.new(private_key, AES.MODE_CBC, self.hexstr2bytes(iv))
-		return self.bytes2hexstr(self.__unpad(cipher.decrypt(cipher_text)))
-
-	def encrypt(self, data, key, iv):
-		pass 
-
-	def decrypt(self, data, key, iv):
-		pass
+		return bytes.decode(self.__unpad(cipher.decrypt(cipher_text)))
 
 
 
 cp = Security()
-message = "asdfasdf"
+message = "asdfasdf-0123456789abcef0123456789abcdef"
+# message = input("->")
 key = "develop"
-encrypted_msg = cp.encrypt(message, key)
-print("Encrypted Message:", encrypted_msg)
-decrypted_msg = cp.decrypt(encrypted_msg, key)
-print("Decrypted Message:", bytes.decode(decrypted_msg))
+iv = "c33bfeae1263c98633bc9e66c6ab8746"
+
+print("Init text", message)
+encrypted_msg = cp.encrypt(message, key, iv)
+print(f"Encrypted Message({len(encrypted_msg)}):", encrypted_msg)
+decrypted_msg = cp.decrypt(encrypted_msg, key, iv)
+print("Decrypted Message:", decrypted_msg)

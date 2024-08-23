@@ -38,7 +38,7 @@ class Security() {
     }
 
     fun hexstr2bytes(data: String):ByteArray{
-        val res = ByteArray(16)
+        val res = ByteArray((data.length/2).toInt())
         var counter = 0
         var bt = ""
         for (c in data){
@@ -89,7 +89,7 @@ class Security() {
         return this.bytes2hexstr(this.ivParameterSpec.iv)
     }
 
-    
+
 
 
 
@@ -114,12 +114,13 @@ class Security() {
         val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
 //        val ivParameterSpec = IvParameterSpec(byteArrayOf(0xc3.toByte(), 0x3b.toByte(), 0xfe.toByte(), 0xae.toByte(), 0x12.toByte(), 0x63.toByte(), 0xc9.toByte(), 0x86.toByte(), 0x33.toByte(), 0xbc.toByte(), 0x9e.toByte(), 0x66.toByte(), 0xc6.toByte(), 0xab.toByte(), 0x87.toByte(), 0x46.toByte())) // Use the same IV as used in encryption
         cipher.init(Cipher.DECRYPT_MODE, this.secret_key, this.ivParameterSpec)
-        return this.bytes2hexstr(cipher.doFinal(encryptedData))
+        return String(cipher.doFinal(encryptedData))
     }
 
 
     fun test() { // debug
-        val originalText = "asdfasdf"
+        Log.d(TAG, "--------- TESTING --------------------------------")
+        val originalText = "asdfasdf-0123456789abcef0123456789abcdef"
 //        val secretKey = generateAESKey(128)
         val secretKey = setKey("develop")
         Log.d(TAG, "key ${secretKey}")
@@ -130,12 +131,12 @@ class Security() {
         val bytes_en_data = str_en_data
         Log.d(TAG, "Encrypted data2: ${bytes_en_data}")
 //        val decrbytes_en_datayptedData = aesDecrypt(encryptedData, secretKey)
-        val decryptedData = aesDecrypt(bytes_en_data)
-        val decryptedText = decryptedData
+        val decryptedText = aesDecrypt(bytes_en_data)
 
         Log.d(TAG, "Original text: ${originalText}")
         Log.d(TAG, "Encrypted text: ${encryptedData}")
         Log.d(TAG, "Decrypted text: ${decryptedText}")
+        Log.d(TAG, "--------------------------------------------------")
     }
 
 

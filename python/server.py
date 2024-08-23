@@ -86,7 +86,7 @@ def handler(conn, addr):
 			cn.enable_encryption()
 			data = cn.decrypt(en_data)
 			ldata = LData(data)
-			cn.set_iv(en_data)
+			cn.set_iv(en_data[-32:])
 			if not ldata.get_size():
 				return
 
