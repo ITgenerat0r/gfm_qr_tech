@@ -39,7 +39,7 @@ class AddDeviceActivity : AppCompatActivity() {
         pref = SharedPreference(this)
         ip = pref.get_str("server_ip")
         val port = pref.get_int("server_port")
-        cntr = Controller(ip, port)
+        cntr = Controller(ip, port, this)
         login = pref.get_str("login")
 
         val toolbar: Toolbar = findViewById(R.id.toolbar_add_device)

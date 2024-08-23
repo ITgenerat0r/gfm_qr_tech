@@ -13,10 +13,23 @@ class Controller():
 		self.__code_size = 2
 		self.__cipher = Security(self.__logs)
 		self.__encryption = False
-
+		self.__iv = ""
+		self.__aes_key = "develop"
 
 	def enable_encryption(self, stat=True):
 		self.__encryption = stat
+
+
+	def set_iv(self, iv):
+		self.__iv = iv
+
+	def get_iv(self):
+		return self.__iv
+
+
+	def get_new_iv(self):
+		return self.__cipher.new_iv()
+
 
 
 	def __prt(self, text=""):
@@ -35,6 +48,9 @@ class Controller():
 	def send(self, text):
 		# self.__prt(f"send({text})")
 		# text = self.__cipher.encrypt(text_clear)
+		if self.__encryption:
+			text = self.encrypt(text)
+			self.__iv = text
 		self.__prt()
 		while len(text) > self.__package_size - self.__code_size:
 			self.__send_bit(f"b_{text[:self.__code_size]}")
@@ -56,10 +72,14 @@ class Controller():
 			else:
 				break
 		# self.__prt(f"recv() = {res}")
+		if self.__encryption:
+			return self.decrypt(res)
 		return res
-		res_clear = self.__cipher.decrypt(res)
-		return res_clear
+
+	def decrypt(self, data):
+		return self.__cipher.decrypt(data, self.__aes_key, self.__iv)
+
+	def encrypt(self, data):
+		return self.__cipher.encrypt(data, self.__aes_key, self.__iv)
 
 
-	def get_aes_iv(self):
-		return self.__cipher.get_iv()

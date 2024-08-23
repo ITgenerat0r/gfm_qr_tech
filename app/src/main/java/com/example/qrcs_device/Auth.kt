@@ -33,7 +33,8 @@ class Auth : AppCompatActivity() {
         signin_btn.setOnClickListener {
             val ip = pref.get_str("server_ip")
             val port = pref.get_int("server_port")
-            val cntr = Controller(ip, port)
+            val cntr = Controller(ip, port, this)
+//            cntr.set_context(this)
             val login_i = login_input.text
             val ss = Security()
             val hash = ss.hash_sha256(passwd_input.text.toString())

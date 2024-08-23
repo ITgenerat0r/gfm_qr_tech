@@ -70,126 +70,140 @@ def handler(conn, addr):
 		if logs:
 			print("Received:", data)
 
-		ldata = LData(data)
-		if not ldata.get_size():
-			return
-
-
-		if ldata.get(0) == "drop":
-			server_run = False
-			cn.send('ok')
-			prt('RETURN')
-			return
-		elif ldata.get(0) == "help":
-			help_text = f"Server version {version}\r\n"
-			for row in help_list:
-				help_text += f"   {row}\r\n"
-			cn.send(help_text)
-		elif ldata.get(0) == 'lg': # login
-			res = db.login(ldata.get(1), ldata.get(2))
-			if res:
-				worker = db.get_worker(ldata.get(1))
-				cn.send(f"success {worker['w_name']}")
-			else:
-				cn.send("error")
-		elif ldata.get(0) == "getdevicedata":
-			number = ldata.get(1)
-			device = db.get_device(number)
-			if device:
-				print("device")
-				print(device)
-				device_data = f"serial_number:{device['serial_number']}|"
-				device_data += f"decimal_number:{device['decimal_number']}|"
-				device_data += f"d_name:{device['d_name']}|"
-				device_data += f"d_type:{device['d_type']}"
-				cn.send(device_data)
-			else:
-				cn.send("none")
-		elif ldata.get(0) == "getworkergroups":
-			data = db.get_worker_groups(ldata.get(1))
-			tx = ""
-			for g in data:
-				if tx:
-					tx += "|"
-				tx += f"{g['g_name']}"
-			if tx:
-				cn.send(tx)
-			else:
-				cn.send("none")
-		elif ldata.get(0) == "getdeviceoperations":
-			ops = db.get_operation_for_device(ldata.get(1))
-			print(ldata.get_all())
-			print("ops", ops)
-			tx = ""
-			for o in ops:
-				if len(tx) > 0:
-					tx += "•"
-				w = db.get_worker(o['worker'])
-				name = o['worker']
-				if w:
-					name = w['w_name']
-				tx += f"id:{o['id']}|date:{o['dt']}|worker:{o['worker']}|name:{name}|operation:{o['operation']}"
-			if not tx:
-				tx = "none"
-			cn.send(tx)
-		elif ldata.get(0) == "createdevice":
-			login = ldata.get(1)
-			data = ldata.get(2)
-			serial = ""
-			decimal = ""
-			name = ""
-			tp = ""
-			for i in data.split('|'):
-				kv = i.split(':')
-				print(kv)
-				key = kv[0]
-				value = kv[1]
-				if key == "serial":
-					serial = value
-				elif key == "decimal":
-					decimal = value
-				elif key == "name":
-					name = value
-				elif key == "type":
-					tp = value
-			cn.send('ok')
-			res = db.add_device(serial, decimal, name, tp)
-			print(f"add status: {res}")
-		elif ldata.get(0) == "deletedevice":
-			login = ldata.get(1)
-			number = 0
-			# check login
-			grps = db.get_worker_groups(login)
-			for grp in grps:
-				if grp['g_name'] in {"editor", "admin"}:
-					number = int(ldata.get(2))
-					break
-			if number:
-				db.delete_device(number)
-				print(f"deleted {number}")
-		elif ldata.get(0) == "getoperationtypes":
-			tx = db.get_stages()
-			cn.send(tx)
-		elif ldata.get(0) == "operation":
-			resp = ""
-			if ldata.get(1) == "add":
-				data = ldata.get_from(2).split('|')
-				print(f"len data: {len(data)}")
-				print(data)
-				if len(data) > 2:
-					login = data[0]
-					number = data[1]
-					operation = data[2]
-					resp = f" {db.add_operation(number, login, operation)}"
-			elif ldata.get(1) == "delete":
-				db.delete_operation_by_id(ldata.get(2))
-			cn.send(f'ok{resp}')
-		elif ldata.get(0) == "ns":
-			cn.send(cn.get_aes_iv())
-		elif ldata.get(0) == "test":
-			cn.send("test_ok")
+		if data[:2] == "ns":
+			iv = cn.get_new_iv()
+			session_id = db.new_session(iv=iv)
+			cn.send(f"{session_id} {iv}")
 		else:
-			cn.send('ok')
+			sp = LData(data)
+			session_id = sp.get(0)
+			en_data - sp.get(1)
+			session = db.get_session(session_id)
+			iv = session['iv']
+			aes_key = session['aes_key']
+			cn.set_iv(iv)
+			cn.enable_encryption()
+			data = cn.decrypt(en_data)
+			ldata = LData(data)
+			cn.set_iv(en_data)
+			if not ldata.get_size():
+				return
+
+			if ldata.get(0) == "drop":
+				server_run = False
+				cn.send('ok')
+				prt('RETURN')
+				return
+			elif ldata.get(0) == "help":
+				help_text = f"Server version {version}\r\n"
+				for row in help_list:
+					help_text += f"   {row}\r\n"
+				cn.send(help_text)
+			elif ldata.get(0) == 'lg': # login
+				res = db.login(ldata.get(1), ldata.get(2))
+				if res:
+					worker = db.get_worker(ldata.get(1))
+					cn.send(f"success {worker['w_name']}")
+				else:
+					cn.send("error")
+			elif ldata.get(0) == "getdevicedata":
+				number = ldata.get(1)
+				device = db.get_device(number)
+				if device:
+					print("device")
+					print(device)
+					device_data = f"serial_number:{device['serial_number']}|"
+					device_data += f"decimal_number:{device['decimal_number']}|"
+					device_data += f"d_name:{device['d_name']}|"
+					device_data += f"d_type:{device['d_type']}"
+					cn.send(device_data)
+				else:
+					cn.send("none")
+			elif ldata.get(0) == "getworkergroups":
+				data = db.get_worker_groups(ldata.get(1))
+				tx = ""
+				for g in data:
+					if tx:
+						tx += "|"
+					tx += f"{g['g_name']}"
+				if tx:
+					cn.send(tx)
+				else:
+					cn.send("none")
+			elif ldata.get(0) == "getdeviceoperations":
+				ops = db.get_operation_for_device(ldata.get(1))
+				print(ldata.get_all())
+				print("ops", ops)
+				tx = ""
+				for o in ops:
+					if len(tx) > 0:
+						tx += "•"
+					w = db.get_worker(o['worker'])
+					name = o['worker']
+					if w:
+						name = w['w_name']
+					tx += f"id:{o['id']}|date:{o['dt']}|worker:{o['worker']}|name:{name}|operation:{o['operation']}"
+				if not tx:
+					tx = "none"
+				cn.send(tx)
+			elif ldata.get(0) == "createdevice":
+				login = ldata.get(1)
+				data = ldata.get(2)
+				serial = ""
+				decimal = ""
+				name = ""
+				tp = ""
+				for i in data.split('|'):
+					kv = i.split(':')
+					print(kv)
+					key = kv[0]
+					value = kv[1]
+					if key == "serial":
+						serial = value
+					elif key == "decimal":
+						decimal = value
+					elif key == "name":
+						name = value
+					elif key == "type":
+						tp = value
+				cn.send('ok')
+				res = db.add_device(serial, decimal, name, tp)
+				print(f"add status: {res}")
+			elif ldata.get(0) == "deletedevice":
+				login = ldata.get(1)
+				number = 0
+				# check login
+				grps = db.get_worker_groups(login)
+				for grp in grps:
+					if grp['g_name'] in {"editor", "admin"}:
+						number = int(ldata.get(2))
+						break
+				if number:
+					db.delete_device(number)
+					print(f"deleted {number}")
+			elif ldata.get(0) == "getoperationtypes":
+				tx = db.get_stages()
+				cn.send(tx)
+			elif ldata.get(0) == "operation":
+				resp = ""
+				if ldata.get(1) == "add":
+					data = ldata.get_from(2).split('|')
+					print(f"len data: {len(data)}")
+					print(data)
+					if len(data) > 2:
+						login = data[0]
+						number = data[1]
+						operation = data[2]
+						resp = f" {db.add_operation(number, login, operation)}"
+				elif ldata.get(1) == "delete":
+					db.delete_operation_by_id(ldata.get(2))
+				cn.send(f'ok{resp}')
+			elif ldata.get(0) == "test":
+				cn.send("test_ok")
+			else:
+				cn.send('ok')
+			iv = cn.get_iv()
+			db.set_iv(session_id, iv)
 
 
 

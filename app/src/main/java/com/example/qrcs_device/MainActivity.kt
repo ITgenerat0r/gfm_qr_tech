@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
 
     var ip = "192.168.47.252"
     var port = 11200
-    val cntr = Controller(ip, port)
+//    val cntr = Controller(ip, port, this)
     var aes_key = "develop"
 
 
@@ -57,57 +57,65 @@ class MainActivity : AppCompatActivity() {
 
 
         //debug ====================================================================
-        val ss = Security()
-        ss.test()
-
-        preferences.set_str("version", version)
-        preferences.set_str("server_ip", ip)
-        preferences.set_int("server_port", port)
-
-        Log.d(TAG, "onCreate()")
-        val login = preferences.get_str("login");
-        val hash = preferences.get_str("passwd");
-        Log.d(TAG, "HASH: $hash")
-        val rq = "lg ${login} ${hash}"
-        Log.d(TAG, String.format("tx: %s", rq))
-        val rx = cntr.send(rq)
-        Log.d(TAG, String.format("rx: %s", rx))
-        if (login == "" || hash == "" || rx == "error"){
+//        val ss = Security()
+//        ss.test()
+        val session = preferences.get_int("session")
+        if (session == 0){
             val intent = Intent(this, Auth::class.java)
             startActivity(intent)
-        } else {
+        }else{
             val intent = Intent(this, ChooseInput::class.java)
             startActivity(intent)
         }
 
-        log_view = findViewById(R.id.textView_log)
-        command_input = findViewById(R.id.EditText_command)
-        send_btn = findViewById(R.id.button_send)
-        toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
-        val actionBar: ActionBar? = supportActionBar
-        actionBar?.setDisplayShowTitleEnabled(false)
-
-//        val username = preferences.get_str("username")
-//        if (username.isNotEmpty()){
-//            log_view!!.setText("${log_view!!.text.toString()} \nLogged as ${username}")
+//        preferences.set_str("version", version)
+//        preferences.set_str("server_ip", ip)
+//        preferences.set_int("server_port", port)
+//
+//        Log.d(TAG, "onCreate()")
+//        val login = preferences.get_str("login");
+//        val hash = preferences.get_str("passwd");
+//        Log.d(TAG, "HASH: $hash")
+//        val rq = "lg ${login} ${hash}"
+//        Log.d(TAG, String.format("tx: %s", rq))
+//        val rx = cntr.send(rq)
+//        Log.d(TAG, String.format("rx: %s", rx))
+//        if (login == "" || hash == "" || rx == "error"){
+//            val intent = Intent(this, Auth::class.java)
+//            startActivity(intent)
+//        } else {
+//            val intent = Intent(this, ChooseInput::class.java)
+//            startActivity(intent)
 //        }
-
-        send_btn?.setOnClickListener {
-            val command = command_input?.editableText.toString()
-            if (command == "logout"){
-                logout()
-                return@setOnClickListener
-            }
-            log_view!!.text = "${log_view!!.text.toString()}\n => $command"
-            Log.d(TAG, String.format("Command: %s", command))
-            val response = cntr.send(command)
-//            Log.d(TAG, "Sended!")
-//            val  response = cntr.recv()
-            log_view!!.text = "${log_view!!.text.toString()}\r\n <= $response"
-            Log.d(TAG, "Done!")
-
-        }
+//
+//        log_view = findViewById(R.id.textView_log)
+//        command_input = findViewById(R.id.EditText_command)
+//        send_btn = findViewById(R.id.button_send)
+//        toolbar = findViewById(R.id.toolbar)
+//        setSupportActionBar(toolbar)
+//        val actionBar: ActionBar? = supportActionBar
+//        actionBar?.setDisplayShowTitleEnabled(false)
+//
+////        val username = preferences.get_str("username")
+////        if (username.isNotEmpty()){
+////            log_view!!.setText("${log_view!!.text.toString()} \nLogged as ${username}")
+////        }
+//
+//        send_btn?.setOnClickListener {
+//            val command = command_input?.editableText.toString()
+//            if (command == "logout"){
+//                logout()
+//                return@setOnClickListener
+//            }
+//            log_view!!.text = "${log_view!!.text.toString()}\n => $command"
+//            Log.d(TAG, String.format("Command: %s", command))
+//            val response = cntr.send(command)
+////            Log.d(TAG, "Sended!")
+////            val  response = cntr.recv()
+//            log_view!!.text = "${log_view!!.text.toString()}\r\n <= $response"
+//            Log.d(TAG, "Done!")
+//
+//        }
     }
 
     override fun onResume() {

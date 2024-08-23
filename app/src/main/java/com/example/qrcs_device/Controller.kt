@@ -1,6 +1,7 @@
 package com.example.qrcs_device
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.os.Build
 import android.os.HandlerThread
 import android.util.Log
@@ -13,19 +14,27 @@ import java.net.Socket
 import java.net.UnknownHostException
 import java.util.concurrent.LinkedBlockingQueue
 
-class Controller(ip_address: String, port: Int) {
+class Controller(ip_address: String, port: Int, context: Context) {
 
     private val TAG = "MainActivity"
     private var server_ip = ip_address
     private var server_port = port
     private val security: Security
-    val aes_key = "develop"
+    var aes_key = "develop"
+    var session_id = 0
+    val pref: SharedPreference = SharedPreference(context)
+
 
     init {
         security = Security()
+        session_id = pref.get_int("session")
+        server_ip = pref.get_str("server_ip")
+        server_port = pref.get_int("server_port")
+
 //        aes.setKey(aes_key)
     }
 //    private var socket: Socket = Socket(server_ip, server_port)
+
 
     fun set_ip(ip: String){
         server_ip = ip

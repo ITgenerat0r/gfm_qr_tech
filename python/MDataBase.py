@@ -274,6 +274,41 @@ class Techno(Database):
             rs += st
         return rs
 
+    def new_session(self, iv="", aes_key=""):
+        cols = "date_last_conn"
+        vals = f"'{self.get_current_time()}'"
+        if iv:
+            cols += ", iv"
+            vals += f", '{iv}'"
+        if aes_key:
+            cols += ", aes_key"
+            vals += f", '{aes_key}'"
+        self._fetchall(f"insert into sessions ({cols}) value ({vals})")
+        r = self._fetchall(f"SELECT * FROM sessions ORDER BY ID DESC LIMIT 1")
+        if r:
+            return r[0]['id']
+        return 0
+
+
+    def delete_session(self, session_id):
+        self._commit(f"delete from sessions where id = {session_id}")
+
+    def get_session(self, session_id):
+        dt = self._fetchall(f"select * from sessions where id = {session_id}")
+        if dt:
+            return dt[0]
+        return {}
+
+    def set_iv(self, session_id, iv):
+        self._commit(f"update sessions set iv = '{iv}' where id = {session_id}")
+
+    def get_iv(self, session_id):
+        ss = self.get_session(session_id)
+        if ss:
+            return ss['iv']
+
+    def set_aes_key(self, session_id, aes_key):
+        self._commit(f"update sessions set aes_key = '{aes_key}' where id = {session_id}")
 
 
         

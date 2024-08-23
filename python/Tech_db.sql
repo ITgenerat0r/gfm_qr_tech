@@ -48,3 +48,13 @@ CREATE TABLE devices
     d_type varchar(128),
     CONSTRAINT PK_devices PRIMARY KEY(serial_number)
 );
+
+
+CREATE TABLE sessions
+(
+    id int not null AUTO_INCREMENT,
+    iv varchar(256),
+    aes_key varchar(256),
+    date_last_conn datetime,
+    CONSTRAINT PK_sessions PRIMARY KEY (id)
+);
