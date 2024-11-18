@@ -43,8 +43,11 @@ class ChooseInput : AppCompatActivity() {
         btn_add = findViewById(R.id.btn_add_device)
         btn_add.visibility = View.INVISIBLE
 
+        window.statusBarColor = resources.getColor(R.color.black)
+
 
         val btn_qr = findViewById<Button>(R.id.btn_read_qr)
+        btn_qr.setBackgroundColor(resources.getColor(R.color.main_color))
         btn_qr.setOnClickListener {
             val pref = SharedPreference(this)
             pref.set_str("qr_code", "")
@@ -56,6 +59,7 @@ class ChooseInput : AppCompatActivity() {
         }
         val pref = SharedPreference(this)
         val btn_apply = findViewById<Button>(R.id.btn_apply)
+        btn_apply.setBackgroundColor(resources.getColor(R.color.main_color))
         btn_apply.setOnClickListener {
             input_number = findViewById<EditText>(R.id.input_serial_number)
             var serial_number = 0
@@ -81,8 +85,11 @@ class ChooseInput : AppCompatActivity() {
 //        actionBar?.setDisplayHomeAsUpEnabled(true)
         val username = pref.get_str("username")
         toolbar.title = username
+        toolbar.setTitleTextColor(resources.getColor(R.color.black))
+        toolbar.setBackgroundColor(resources.getColor(R.color.main_color))
 
         val btn_add_device: Button = findViewById(R.id.btn_add_device)
+        btn_add_device.setBackgroundColor(resources.getColor(R.color.main_color))
         btn_add_device.setOnClickListener {
             val pref = SharedPreference(this)
             var serial_number = pref.get_int("serial_number")
@@ -116,7 +123,7 @@ class ChooseInput : AppCompatActivity() {
         if (d_status == "none"){
             val ip = pref.get_str("server_ip")
             val port = pref.get_int("server_port")
-            val cntr = Controller(ip, port, this)
+            val cntr = Controller(this)
             val groups_rx = cntr.send("getworkergroups ${pref.get_str("login")}")
             val groups: ArrayList<String> = arrayListOf()
             for (g in groups_rx.split('|')){

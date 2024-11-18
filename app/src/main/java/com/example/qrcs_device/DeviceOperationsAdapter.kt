@@ -136,7 +136,7 @@ class DeviceOperationsAdapter(private var activity: Activity, private var items:
         }
 
 
-        val cntr = Controller(data.ip, data.port, context)
+        val cntr = Controller(context)
         viewHolder.btn_row.setOnClickListener {
             Log.d(TAG, "Pressed row button. Position: ${position}. Button type: ${oper.get_btn_type()}.")
             if (oper.get_btn_type() == "delete"){

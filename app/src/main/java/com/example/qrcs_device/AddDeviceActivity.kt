@@ -34,12 +34,13 @@ class AddDeviceActivity : AppCompatActivity() {
         input_name = findViewById(R.id.edit_name)
         input_type = findViewById(R.id.edit_type)
         btn_apply = findViewById(R.id.btn_add_device_apply)
+        window.statusBarColor = resources.getColor(R.color.black)
 
 
         pref = SharedPreference(this)
         ip = pref.get_str("server_ip")
         val port = pref.get_int("server_port")
-        cntr = Controller(ip, port, this)
+        cntr = Controller(this)
         login = pref.get_str("login")
 
         val toolbar: Toolbar = findViewById(R.id.toolbar_add_device)
@@ -51,6 +52,8 @@ class AddDeviceActivity : AppCompatActivity() {
 //        login = pref.get_str("login")
         val serial_number = pref.get_int("serial_number")
         toolbar.title = serial_number.toString()
+        toolbar.setTitleTextColor(resources.getColor(R.color.black))
+        toolbar.setBackgroundColor(resources.getColor(R.color.main_color))
 
         btn_apply.setOnClickListener {
             var tx: String = "createdevice ${login} serial:${serial_number}"

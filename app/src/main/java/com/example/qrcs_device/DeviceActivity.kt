@@ -34,6 +34,8 @@ class DeviceActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_device)
 
+        window.statusBarColor = resources.getColor(R.color.black)
+
 
         val toolbar: Toolbar = findViewById(R.id.toolbar_device)
         setSupportActionBar(toolbar)
@@ -44,6 +46,8 @@ class DeviceActivity : AppCompatActivity() {
         login = pref.get_str("login")
         serial_number = pref.get_int("serial_number")
         toolbar.title = serial_number.toString()
+        toolbar.setTitleTextColor(resources.getColor(R.color.black))
+        toolbar.setBackgroundColor(resources.getColor(R.color.main_color))
 
         val text_device = findViewById<TextView>(R.id.text_device_data)
         listview_operations = findViewById(R.id.listview_operations)
@@ -52,7 +56,7 @@ class DeviceActivity : AppCompatActivity() {
 
         val ip = pref.get_str("server_ip")
         val port = pref.get_int("server_port")
-        cntr = Controller(ip, port, this)
+        cntr = Controller(this)
         // get user groups here ...
         val groups_rx = cntr.send("getworkergroups ${pref.get_str("login")}")
         for (g in groups_rx.split('|')){

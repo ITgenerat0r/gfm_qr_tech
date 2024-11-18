@@ -17,11 +17,11 @@ import java.util.Arrays
 
 class MainActivity : AppCompatActivity() {
 
-    val version = "1.0"
+    val version = "2.0"
 
-    var ip = "192.168.47.252"
-    var port = 11200
-//    val cntr = Controller(ip, port, this)
+    var ip = "82.116.49.241"
+    var port = 24116
+//    val cntr = Controller( this)
     var aes_key = "develop"
 
 
@@ -55,6 +55,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        preferences.set_str("version", version)
+        preferences.set_str("server_ip", ip)
+        preferences.set_int("server_port", port)
+
+        window.statusBarColor = resources.getColor(R.color.black)
+
 
         //debug ====================================================================
         val ss = Security()
@@ -68,9 +74,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-//        preferences.set_str("version", version)
-//        preferences.set_str("server_ip", ip)
-//        preferences.set_int("server_port", port)
+
 //
 //        Log.d(TAG, "onCreate()")
 //        val login = preferences.get_str("login");

@@ -12,7 +12,7 @@ from data_split_class import LData
 from MDataBase import Techno
 import Config
 
-version = "0.1"
+version = "1.0"
 
 HOST = '0.0.0.0'  # Standard loopback interface address (localhost)
 PORT = 11200      # Port to listen on (non-privileged ports are > 1023)

@@ -8,6 +8,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.appcompat.widget.Toolbar
 
 class Auth : AppCompatActivity() {
 
@@ -30,10 +31,14 @@ class Auth : AppCompatActivity() {
         val signin_btn: Button = findViewById(R.id.btn_signin)
         val out_errors: TextView = findViewById(R.id.textView_errors)
 
+        window.statusBarColor = resources.getColor(R.color.black)
+
+        signin_btn.setBackgroundColor(resources.getColor(R.color.main_color))
         signin_btn.setOnClickListener {
-            val ip = pref.get_str("server_ip")
-            val port = pref.get_int("server_port")
-            val cntr = Controller(ip, port, this)
+            val cntr = Controller(this)
+            if (!cntr.checkForInternet()){
+                out_errors.text = getString(R.string.check_internet)
+            }
 //            cntr.set_context(this)
             val login_i = login_input.text
             val ss = Security()
