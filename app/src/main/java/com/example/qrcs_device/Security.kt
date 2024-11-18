@@ -79,6 +79,7 @@ class Security() {
         val secretKey = SecretKeySpec(key, "AES")
         return secretKey
     }
+    
 
     fun set_iv(new_iv: String){
         this.ivParameterSpec = IvParameterSpec(this.hexstr2bytes(new_iv))

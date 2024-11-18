@@ -14,7 +14,7 @@ class Controller():
 		self.__cipher = Security(self.__logs)
 		self.__encryption = False
 		self.__iv = ""
-		self.__aes_key = "develop"
+		self.__aes_key = self.__cipher.sha256("develop")
 
 	def enable_encryption(self, stat=True):
 		self.__encryption = stat
