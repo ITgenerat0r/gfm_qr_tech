@@ -103,13 +103,15 @@ class Security() {
     fun aesEncrypt(data: String): String {
         Log.d(TAG, "ENCRYPT")
         Log.d(TAG, "data: $data")
+        val b_data = data.toByteArray(charset("UTF-8"))
+        Log.d(TAG, "b_data: ${bytes2hexstr(b_data)}")
         val cipher = Cipher.getInstance("AES/CBC/PKCS5Padding")
 //        val ivParameterSpec = IvParameterSpec(ByteArray(16)) // Use a secure IV in production
 //        val ivParameterSpec = IvParameterSpec(byteArrayOf(0xc3.toByte(), 0x3b.toByte(), 0xfe.toByte(), 0xae.toByte(), 0x12.toByte(), 0x63.toByte(), 0xc9.toByte(), 0x86.toByte(), 0x33.toByte(), 0xbc.toByte(), 0x9e.toByte(), 0x66.toByte(), 0xc6.toByte(), 0xab.toByte(), 0x87.toByte(), 0x46.toByte()))
         Log.d(TAG,"iv ${get_iv()}")
         Log.d(TAG, "secretKey ${bytes2hexstr(this.secret_key.encoded)}")
         cipher.init(Cipher.ENCRYPT_MODE, this.secret_key, this.ivParameterSpec)
-        val dd = cipher.doFinal(data.toByteArray(charset("UTF-8")))
+        val dd = cipher.doFinal(b_data)
         show_bytes(dd)
         return this.bytes2hexstr(dd)
     }

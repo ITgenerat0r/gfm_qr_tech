@@ -7,6 +7,7 @@ from security import Security
 class Controller():
 	"""docstring for Controller"""
 	def __init__(self, connection, logs = False):
+		self.__version = "2.0"
 		self.__connection = connection
 		self.__logs = logs
 		self.__package_size = 1024
@@ -53,8 +54,8 @@ class Controller():
 			self.__iv = text[-32:]
 		self.__prt()
 		while len(text) > self.__package_size - self.__code_size:
-			self.__send_bit(f"b_{text[:self.__code_size]}")
-			text = text[self.__code_size:]
+			self.__send_bit(f"b_{text[:self.__package_size - self.__code_size]}")
+			text = text[self.__package_size - self.__code_size:]
 			self.__recv_bit()
 		else:
 			self.__send_bit(f"e_{text}")
