@@ -103,7 +103,12 @@ class Security() {
         Log.d(TAG,"iv ${get_iv()}")
         Log.d(TAG, "secretKey ${bytes2hexstr(this.secret_key.encoded)}")
         cipher.init(Cipher.ENCRYPT_MODE, this.secret_key, this.ivParameterSpec)
-        return this.bytes2hexstr(cipher.doFinal(data.toByteArray(charset("UTF-8"))))
+        val dd = cipher.doFinal(data.toByteArray(charset("UTF-8")))
+        Log.d(TAG, "DDDDD: $dd")
+        for(i in dd){
+            Log.d(TAG, "-: $i")
+        }
+        return this.bytes2hexstr(dd)
     }
 
     fun aesDecrypt(data: String): String {

@@ -80,6 +80,9 @@ class Security():
 		if s:
 			print("__unpad: is s = True")
 			print(f"len s: {len(s)}")
+			print(f"s: {s}")
+			for i in s:
+				print(int(i))
 			print(f"=> s: {s[: -ord(s[len(s) - 1 :])]}")
 			return s[: -ord(s[len(s) - 1 :])]
 		else:
