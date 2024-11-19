@@ -148,7 +148,7 @@ class DeviceOperationsAdapter(private var activity: Activity, private var items:
             if (oper.get_btn_type() == "delete"){
                 Log.d(TAG, "= delete")
 //                val rx = cntr.send("operation ${oper.get_btn_type()} ${data.login}|${data.serial_number}|${viewHolder.txt_operation.text}|${viewHolder.txt_date.text}")
-                val rx = cntr.send("operation delete ${oper.get_id()}")
+                val rx = cntr.send("testoperation delete ${oper.get_id()}")
                 Log.d(TAG, "rx: ${rx}")
                 if (rx == "ok"){
                     this.items.removeAt(position)

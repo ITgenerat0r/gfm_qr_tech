@@ -78,12 +78,6 @@ class Security():
 		# return s[: -int(s[len(s) - 1:], 16)-1]
 
 		if s:
-			print("__unpad: is s = True")
-			print(f"len s: {len(s)}")
-			print(f"s: {s}")
-			for i in s:
-				print(int(i))
-			print(f"=> s: {s[: -ord(s[len(s) - 1 :])]}")
 			return s[: -ord(s[len(s) - 1 :])]
 		else:
 			return b''
@@ -125,6 +119,7 @@ class Security():
 		print(f"de_data: {de_data}")
 		u_data = self.__unpad(de_data)
 		print(f"u_data: {de_data}")
+		print(self.bytes2hexstr(u_data))
 		# return bytes.decode(u_data)
 		return u_data.decode('utf-8')
 
