@@ -121,7 +121,12 @@ class Security():
 		# private_key = hashlib.sha256(key.encode("utf-8")).digest()
 		# private_key = self.hexstr2bytes(key)
 		cipher = AES.new(self.hexstr2bytes(key), AES.MODE_CBC, self.hexstr2bytes(iv))
-		return bytes.decode(self.__unpad(cipher.decrypt(cipher_text)))
+		de_data = cipher.decrypt(cipher_text)
+		print(f"de_data: {de_data}")
+		u_data = self.__unpad(de_data)
+		print(f"u_data: {de_data}")
+		# return bytes.decode(u_data)
+		return u_data.decode('utf-8')
 
 
 	def sha256(self, data):

@@ -91,6 +91,12 @@ class Security() {
     }
 
 
+    fun show_bytes(data: ByteArray){
+        Log.d(TAG, "DDDDD: $data")
+        for(i in data){
+            Log.d(TAG, "> $i         ${i+128}")
+        }
+    }
 
 
 
@@ -104,10 +110,7 @@ class Security() {
         Log.d(TAG, "secretKey ${bytes2hexstr(this.secret_key.encoded)}")
         cipher.init(Cipher.ENCRYPT_MODE, this.secret_key, this.ivParameterSpec)
         val dd = cipher.doFinal(data.toByteArray(charset("UTF-8")))
-        Log.d(TAG, "DDDDD: $dd")
-        for(i in dd){
-            Log.d(TAG, "-: $i")
-        }
+        show_bytes(dd)
         return this.bytes2hexstr(dd)
     }
 
