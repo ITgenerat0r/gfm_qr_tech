@@ -55,6 +55,7 @@ class AddDeviceActivity : AppCompatActivity() {
         toolbar.setTitleTextColor(resources.getColor(R.color.black))
         toolbar.setBackgroundColor(resources.getColor(R.color.main_color))
 
+        btn_apply.setBackgroundColor(resources.getColor(R.color.main_color))
         btn_apply.setOnClickListener {
             var tx: String = "createdevice ${login} serial:${serial_number}"
             if(input_decimal.text.toString() != ""){

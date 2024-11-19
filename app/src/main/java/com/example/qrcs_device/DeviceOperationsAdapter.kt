@@ -13,6 +13,8 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.BaseAdapter
 import android.widget.Button
+import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.Spinner
 import android.widget.TextView
 import com.example.qrcs_device.objects.Data
@@ -33,7 +35,7 @@ class DeviceOperationsAdapter(private var activity: Activity, private var items:
         var txt_date: TextView
         var txt_worker: TextView
         var spin_operation: Spinner
-        var btn_row: Button
+        var btn_row: ImageView
 
 
         init {
@@ -122,16 +124,20 @@ class DeviceOperationsAdapter(private var activity: Activity, private var items:
 
 
 
+
+        viewHolder.btn_row.setColorFilter(context.resources.getColor(R.color.main_color))
         if (oper.get_btn_type() == "none"){
             viewHolder.btn_row.visibility = View.INVISIBLE
             viewHolder.spin_operation.visibility = View.INVISIBLE
         } else if (oper.get_btn_type() == "delete"){
-            viewHolder.btn_row.setBackgroundResource(R.drawable.baseline_clear_24)
+            viewHolder.btn_row.setImageResource(R.drawable.baseline_clear_24)
             viewHolder.spin_operation.visibility = View.GONE
             viewHolder.txt_operation.visibility = View.VISIBLE
         }else if (oper.get_btn_type() == "add"){
-            viewHolder.btn_row.setBackgroundResource(R.drawable.baseline_add_24)
+//            viewHolder.btn_row.setBackgroundResource(R.drawable.baseline_add_24)
+            viewHolder.btn_row.setImageResource(R.drawable.baseline_add_24)
             viewHolder.spin_operation.visibility = View.VISIBLE
+            viewHolder.spin_operation.background.setTint(context.resources.getColor(R.color.main_color))
             viewHolder.txt_operation.visibility = View.GONE
         }
 
@@ -142,7 +148,7 @@ class DeviceOperationsAdapter(private var activity: Activity, private var items:
             if (oper.get_btn_type() == "delete"){
                 Log.d(TAG, "= delete")
 //                val rx = cntr.send("operation ${oper.get_btn_type()} ${data.login}|${data.serial_number}|${viewHolder.txt_operation.text}|${viewHolder.txt_date.text}")
-                val rx = cntr.send("operation delete ${oper.get_id()}")
+                val rx = cntr.send("operation delete ${oper.get_id()} ${data.login}")
                 Log.d(TAG, "rx: ${rx}")
                 if (rx == "ok"){
                     this.items.removeAt(position)
@@ -152,7 +158,7 @@ class DeviceOperationsAdapter(private var activity: Activity, private var items:
 
             } else if (oper.get_btn_type() == "add"){
                 Log.d(TAG, "= add")
-                val rx = cntr.send("operation ${oper.get_btn_type()} ${data.login}|${data.serial_number}|${viewHolder.spin_operation.selectedItem}")
+                val rx = cntr.send("operation add ${data.login}|${data.serial_number}|${viewHolder.spin_operation.selectedItem}")
                 Log.d(TAG, "rx: ${rx}")
                 val rx_data = rx.split(' ')
                 if (rx_data[0] == "ok"){

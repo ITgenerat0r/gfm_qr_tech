@@ -11,13 +11,14 @@ import android.widget.TextView
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import java.nio.charset.Charset
 import java.security.MessageDigest
 import java.util.Arrays
 
 
 class MainActivity : AppCompatActivity() {
 
-    val version = "2.0"
+    val version = "2.1"
 
     var ip = "82.116.49.241"
     var port = 24116
@@ -61,6 +62,7 @@ class MainActivity : AppCompatActivity() {
 
         window.statusBarColor = resources.getColor(R.color.black)
 
+        Log.d("SecurityClass", "Charset: ${Charset.defaultCharset()}")
 
         //debug ====================================================================
         val ss = Security()
