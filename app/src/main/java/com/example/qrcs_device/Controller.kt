@@ -124,8 +124,8 @@ class Controller(private val context: Context) {
         if (session_id > 0){
             session_str = "$session_id "
         }
-        val rx = send_bit("e_$session_str$sdata").substring(2)
-
+        val rx = req("$session_str$sdata")
+        Log.d(TAG, "rx (send): $rx")
         if (encryption_enabled){
             security.set_iv(sdata.substring(sdata.length-32))
             val rdata = security.aesDecrypt(rx)
@@ -185,6 +185,83 @@ class Controller(private val context: Context) {
         val rrr: String = queue.take()
         Log.d(TAG, "Received bit: $rrr")
         return rrr
+    }
+
+    fun req(data: String): String{
+        val queue = LinkedBlockingQueue<String>()
+        val th = Thread {
+            var res = ""
+            var err = ""
+            val code_len = 2
+            val package_len = 1024
+            var s_data = data
+            try {
+                val socket = Socket(server_ip, server_port)
+
+                var rx = ""
+                while (s_data.length > package_len + code_len){
+                    rx = __req_bit("b_"+s_data.substring(0, package_len-code_len), socket)
+                    s_data = s_data.substring(package_len-code_len)
+                }
+                rx = __req_bit("e_"+s_data, socket)
+
+                while (true){
+                    if (rx.substring(0, code_len) == "e_"){
+                        res += rx.substring(code_len)
+                        break
+                    } else if (rx.substring(0, code_len) == "b_"){
+                        res += rx.substring(code_len)
+                        rx = __req_bit("ok", socket)
+                    } else {
+                        Log.d(TAG, "Something went wrong! (wrong code)")
+                        break
+                    }
+                }
+
+            } catch (e: UnknownHostException) {
+                e.printStackTrace()
+                err = e.toString()
+                Log.d(TAG, String.format(" Unknown Error: %s", e.toString()))
+                res = String.format(" Unknown Error: %s", e.toString())
+            } catch (e: IOException) {
+                e.printStackTrace()
+                err = e.toString()
+                Log.d(TAG, String.format("IO Error: %s", e.toString()))
+                res = String.format("IO Error: %s", e.toString())
+            } catch (e: Exception) {
+                err = e.toString()
+                Log.d(TAG, String.format("Error: %s", e.toString()))
+                res = String.format("Error: %s", e.toString())
+                e.printStackTrace()
+            }
+            Log.d(TAG, "Connect error: $err")
+            queue.add(res)
+        }
+        th.start()
+        th.join()
+        val rrr: String = queue.take()
+        Log.d(TAG, "Received bit: $rrr")
+        return rrr
+    }
+
+    fun __req_bit(data: String, socket: Socket): String{
+        val out = PrintWriter(
+            BufferedWriter(
+                OutputStreamWriter(socket.getOutputStream())
+            ),
+            true
+        )
+        out.println(data)
+        Log.d(TAG, "Sended: $data")
+
+//              we can get response here
+        val inputStream = socket.getInputStream()
+        val buffer = ByteArray(1024)
+        val bytesRead = inputStream.read(buffer)
+        val response = String(buffer, 0, bytesRead)
+
+        Log.d(TAG, "Received: $response")
+        return response
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
