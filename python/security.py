@@ -88,6 +88,7 @@ class Security():
 			print("ENCRYPT")
 			print("----------------------------")
 			print(f"plain_text({len(plain_text)}): '{plain_text}'")
+			print(f"bytes: {self.bytes2hexstr(plain_text.encode('utf-8'))}")
 			print("----------------------------")
 			print(f"key({len(key)}): {key}")
 			print(f"iv({len(iv)}): {iv}")
@@ -102,13 +103,15 @@ class Security():
 
 		print(f"p_text({len(p_text)})")
 		enc_data = cipher.encrypt(p_text)
-		return self.bytes2hexstr(enc_data)
+		res = self.bytes2hexstr(enc_data)
+		print(f"Encrypted: {res}")
+		return res
 
 
 	def decrypt(self, data, key, iv):
 		if self.__logs:
 			print("DECRYPT")
-			print(f"data: {data}")
+			print(f"Encrypted data: {data}")
 			print(f"key: {key}")
 			print(f"iv: {iv}")
 		cipher_text = self.hexstr2bytes(data)
@@ -118,7 +121,7 @@ class Security():
 		de_data = cipher.decrypt(cipher_text)
 		print(f"de_data: {de_data}")
 		u_data = self.__unpad(de_data)
-		print(f"u_data: {de_data}")
+		print(f"u_data: {u_data}")
 		print(self.bytes2hexstr(u_data))
 		# return bytes.decode(u_data)
 		return u_data.decode('utf-8')

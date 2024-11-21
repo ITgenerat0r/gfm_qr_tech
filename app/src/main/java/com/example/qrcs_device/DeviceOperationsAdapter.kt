@@ -145,17 +145,7 @@ class DeviceOperationsAdapter(private var activity: Activity, private var items:
         val cntr = Controller(context)
         viewHolder.btn_row.setOnClickListener {
             Log.d(TAG, "Pressed row button. Position: ${position}. Button type: ${oper.get_btn_type()}.")
-            if (oper.get_btn_type() == "delete"){
-                Log.d(TAG, "= delete")
-//                val rx = cntr.send("operation ${oper.get_btn_type()} ${data.login}|${data.serial_number}|${viewHolder.txt_operation.text}|${viewHolder.txt_date.text}")
-                val rx = cntr.send("testoperation delete ${oper.get_id()}")
-                Log.d(TAG, "rx: ${rx}")
-                if (rx == "ok"){
-                    this.items.removeAt(position)
-                    this.notifyDataSetChanged()
-                    Log.d(TAG, "deleted")
-                }
-            } else if (oper.get_btn_type() == "add"){
+            if (oper.get_btn_type() == "add"){
                 Log.d(TAG, "= add")
                 val rx = cntr.send("operation add ${data.login}|${data.serial_number}|${viewHolder.spin_operation.selectedItem}")
                 Log.d(TAG, "rx: ${rx}")
@@ -184,6 +174,16 @@ class DeviceOperationsAdapter(private var activity: Activity, private var items:
 
                     this.notifyDataSetChanged()
                     Log.d(TAG, "added")
+                }
+            } else if (oper.get_btn_type() == "delete"){
+                Log.d(TAG, "= delete")
+//                val rx = cntr.send("operation ${oper.get_btn_type()} ${data.login}|${data.serial_number}|${viewHolder.txt_operation.text}|${viewHolder.txt_date.text}")
+                val rx = cntr.send("operation delete ${oper.get_id()}")
+                Log.d(TAG, "rx: ${rx}")
+                if (rx == "ok"){
+                    this.items.removeAt(position)
+                    this.notifyDataSetChanged()
+                    Log.d(TAG, "deleted")
                 }
             }
 
