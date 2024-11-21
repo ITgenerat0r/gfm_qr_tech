@@ -176,7 +176,7 @@ def handler(conn, addr):
 				# check login
 				grps = db.get_worker_groups(login)
 				for grp in grps:
-					if grp['g_name'] in {"editor", "admin"}:
+					if grp['g_name'] in {"editors", "admins"}:
 						number = int(ldata.get(2))
 						db.delete_device(number)
 						print(f"deleted {number}")
