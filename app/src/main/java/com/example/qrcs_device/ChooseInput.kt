@@ -49,6 +49,29 @@ class ChooseInput : AppCompatActivity() {
         val btn_qr = findViewById<Button>(R.id.btn_read_qr)
         btn_qr.setBackgroundColor(resources.getColor(R.color.main_color))
         btn_qr.setOnClickListener {
+            ///// DEBUG //////////////////////////////
+            val s = Security()
+            val tg = "SecurityClass"
+            val g = "operation delete 14"
+
+            Log.d(tg, "Plain text: $g")
+
+            val iv = "46c1c17e69cb1d9355485e093bec7493"
+            val key = "947726dd6318753268f3bfbe5e87ae2afe220db399c26e119c181a59227b0c60"
+
+
+            s.set_iv(iv)
+            s.set_hashkey(key)
+
+            val e_data = s.aesEncrypt(g)
+
+
+            val d_data = s.aesDecrypt(e_data)
+
+
+            Log.d(tg, "Decrypted: $d_data")
+
+            //////////////////////////////////////////
             val pref = SharedPreference(this)
             pref.set_str("qr_code", "")
             // run QR reader here

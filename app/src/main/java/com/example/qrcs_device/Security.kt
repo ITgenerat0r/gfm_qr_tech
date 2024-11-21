@@ -79,6 +79,10 @@ class Security() {
         val secretKey = SecretKeySpec(key, "AES")
         return secretKey
     }
+
+    fun set_hashkey(new_key: String){
+        this.secret_key = SecretKeySpec(this.hexstr2bytes(new_key), "AES")
+    }
     
 
     fun set_iv(new_iv: String){
@@ -128,7 +132,7 @@ class Security() {
 //        val ivParameterSpec = IvParameterSpec(byteArrayOf(0xc3.toByte(), 0x3b.toByte(), 0xfe.toByte(), 0xae.toByte(), 0x12.toByte(), 0x63.toByte(), 0xc9.toByte(), 0x86.toByte(), 0x33.toByte(), 0xbc.toByte(), 0x9e.toByte(), 0x66.toByte(), 0xc6.toByte(), 0xab.toByte(), 0x87.toByte(), 0x46.toByte())) // Use the same IV as used in encryption
         cipher.init(Cipher.DECRYPT_MODE, this.secret_key, this.ivParameterSpec)
         val b_res = cipher.doFinal(encryptedData)
-        Log.d(TAG, "Decrypted: $b_res")
+        Log.d(TAG, "Decrypted: ${this.bytes2hexstr(b_res)}")
         val res = String(b_res, charset("UTF-8"))
         Log.d(TAG, "Data: $res")
         return res

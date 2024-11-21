@@ -178,10 +178,12 @@ def handler(conn, addr):
 				for grp in grps:
 					if grp['g_name'] in {"editor", "admin"}:
 						number = int(ldata.get(2))
+						db.delete_device(number)
+						print(f"deleted {number}")
+						cn.send('ok')
 						break
-				if number:
-					db.delete_device(number)
-					print(f"deleted {number}")
+				if number == 0:
+					cn.send('permission denied')
 			elif ldata.get(0) == "getoperationtypes":
 				tx = db.get_stages()
 				cn.send(tx)

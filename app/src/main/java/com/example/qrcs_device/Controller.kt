@@ -42,14 +42,10 @@ class Controller(private val context: Context) {
 
         Log.d(TAG, "Set session...")
         if (session_id == 0){
-            val rx = send("ns")
-            Log.d(TAG, "rx: $rx")
-            val data_rx = rx.split(' ')
-            if (data_rx.size > 1){
-                session_id = data_rx[0].toInt()
-                iv = data_rx[1]
-                pref.set_str("iv", iv)
-                enable_encryption()
+            if (open_session()){
+                Log.d(TAG, "Successful open session!")
+            } else {
+                Log.d(TAG, "Failed open session!")
             }
 
         }
@@ -60,6 +56,20 @@ class Controller(private val context: Context) {
     }
 //    private var socket: Socket = Socket(server_ip, server_port)
 
+    fun open_session(): Boolean{
+        val rx = req("ns")
+        Log.d(TAG, "rx: $rx")
+        val data_rx = rx.split(' ')
+        if (data_rx.size > 1){
+            session_id = data_rx[0].toInt()
+            pref.set_int("session", session_id)
+            iv = data_rx[1]
+            pref.set_str("iv", iv)
+            enable_encryption()
+            return true
+        }
+        return false
+    }
 
     fun checkForInternet(): Boolean {
 
@@ -114,6 +124,14 @@ class Controller(private val context: Context) {
 //        return "${aes.decrypt(r, aes_key)}"
 
         var sdata = data
+        if (!encryption_enabled){
+            Log.d(TAG, "Encryption disabled!")
+            if (open_session()){
+                Log.d(TAG, "Successful open session!")
+            } else {
+                Log.d(TAG, "Failed open session!")
+            }
+        }
         if (encryption_enabled){
             val iv = pref.get_str("iv")
             security.set_iv(iv)
@@ -136,56 +154,56 @@ class Controller(private val context: Context) {
         return rx
     }
 
-    private fun send_bit(data: String): String{
-        val queue = LinkedBlockingQueue<String>()
-        val th = Thread {
-            var res = "empty"
-            var err = ""
-            try {
-                val socket = Socket(server_ip, server_port)
-                val out = PrintWriter(
-                    BufferedWriter(
-                        OutputStreamWriter(socket.getOutputStream())
-                    ),
-                    true
-                )
-                out.println(data)
-                Log.d(TAG, "Sended: $data")
-
-//              we can get response here
-                val inputStream = socket.getInputStream()
-                val buffer = ByteArray(1024)
-                val bytesRead = inputStream.read(buffer)
-                val response = String(buffer, 0, bytesRead)
-
-                Log.d(TAG, "Received: $response")
-                res = response
-
-            } catch (e: UnknownHostException) {
-                e.printStackTrace()
-                err = e.toString()
-                Log.d(TAG, String.format(" Unknown Error: %s", e.toString()))
-                res = String.format(" Unknown Error: %s", e.toString())
-            } catch (e: IOException) {
-                e.printStackTrace()
-                err = e.toString()
-                Log.d(TAG, String.format("IO Error: %s", e.toString()))
-                res = String.format("IO Error: %s", e.toString())
-            } catch (e: Exception) {
-                err = e.toString()
-                Log.d(TAG, String.format("Error: %s", e.toString()))
-                res = String.format("Error: %s", e.toString())
-                e.printStackTrace()
-            }
-            Log.d(TAG, "Connect error: $err")
-            queue.add(res)
-        }
-        th.start()
-        th.join()
-        val rrr: String = queue.take()
-        Log.d(TAG, "Received bit: $rrr")
-        return rrr
-    }
+//    private fun send_bit(data: String): String{
+//        val queue = LinkedBlockingQueue<String>()
+//        val th = Thread {
+//            var res = "empty"
+//            var err = ""
+//            try {
+//                val socket = Socket(server_ip, server_port)
+//                val out = PrintWriter(
+//                    BufferedWriter(
+//                        OutputStreamWriter(socket.getOutputStream())
+//                    ),
+//                    true
+//                )
+//                out.println(data)
+//                Log.d(TAG, "Sended: $data")
+//
+////              we can get response here
+//                val inputStream = socket.getInputStream()
+//                val buffer = ByteArray(1024)
+//                val bytesRead = inputStream.read(buffer)
+//                val response = String(buffer, 0, bytesRead)
+//
+//                Log.d(TAG, "Received: $response")
+//                res = response
+//
+//            } catch (e: UnknownHostException) {
+//                e.printStackTrace()
+//                err = e.toString()
+//                Log.d(TAG, String.format(" Unknown Error: %s", e.toString()))
+//                res = String.format(" Unknown Error: %s", e.toString())
+//            } catch (e: IOException) {
+//                e.printStackTrace()
+//                err = e.toString()
+//                Log.d(TAG, String.format("IO Error: %s", e.toString()))
+//                res = String.format("IO Error: %s", e.toString())
+//            } catch (e: Exception) {
+//                err = e.toString()
+//                Log.d(TAG, String.format("Error: %s", e.toString()))
+//                res = String.format("Error: %s", e.toString())
+//                e.printStackTrace()
+//            }
+//            Log.d(TAG, "Connect error: $err")
+//            queue.add(res)
+//        }
+//        th.start()
+//        th.join()
+//        val rrr: String = queue.take()
+//        Log.d(TAG, "Received bit: $rrr")
+//        return rrr
+//    }
 
     fun req(data: String): String{
         val queue = LinkedBlockingQueue<String>()

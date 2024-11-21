@@ -59,6 +59,7 @@ class MainActivity : AppCompatActivity() {
         preferences.set_str("version", version)
         preferences.set_str("server_ip", ip)
         preferences.set_int("server_port", port)
+        preferences.set_int("session", 0)
 
         window.statusBarColor = resources.getColor(R.color.black)
 
