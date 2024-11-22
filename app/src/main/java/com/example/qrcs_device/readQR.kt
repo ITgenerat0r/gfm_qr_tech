@@ -29,6 +29,7 @@ class readQR : AppCompatActivity() {
     private lateinit var previewView: PreviewView
     private lateinit var imageCapture: ImageCapture
     override fun onCreate(savedInstanceState: Bundle?) {
+        Log.d(TAG, "onCreate()")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_read_qr)
 
@@ -45,10 +46,10 @@ class readQR : AppCompatActivity() {
 
 
 
+        Log.d(TAG, "pre")
         previewView = findViewById<PreviewView>(R.id.previewView)
-        imageCapture = ImageCapture.Builder()
-            .setTargetRotation(previewView.display.rotation)
-            .build()
+        Log.d(TAG, "capture")
+        imageCapture = ImageCapture.Builder().build()
 
         requestCameraPermission()
     }
@@ -85,6 +86,7 @@ class readQR : AppCompatActivity() {
             openCamera()
         } else {
             // Permission denied
+            finish()
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
@@ -114,6 +116,7 @@ class readQR : AppCompatActivity() {
                     imageCapture
                 )
 //                preview.setSurfaceProvider(previewView.createSurfaceProvider(camera.cameraInfo))
+                preview.setSurfaceProvider(previewView.surfaceProvider)
             } catch (exception: Exception) {
                 // Handle camera setup errors
             }
