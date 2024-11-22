@@ -134,6 +134,10 @@ class ChooseInput : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.id_logout){
             logout()
+        } else if (item.itemId == R.id.id_settings){
+            // run settings activity
+            val intent = Intent(this, Settings::class.java)
+            startActivity(intent)
         }
         return super.onOptionsItemSelected(item)
     }

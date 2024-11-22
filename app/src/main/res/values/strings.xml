@@ -23,4 +23,5 @@
     <string name="something_went_wrong">Something went wrong.</string>
     <string name="version">Version</string>
     <string name="check_internet">Check your internet connection</string>
+    <string name="settings">Settings</string>
 </resources>
