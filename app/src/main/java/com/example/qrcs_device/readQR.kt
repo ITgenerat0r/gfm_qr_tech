@@ -2,16 +2,14 @@ package com.example.qrcs_device
 
 import android.Manifest
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.hardware.camera2.CameraManager
 import android.media.Image
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.util.Log
-import android.view.View
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -23,10 +21,11 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.google.zxing.integration.android.IntentIntegrator
+import com.google.zxing.client.android.Intents
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
 import java.io.File
 import java.io.FileOutputStream
+
 
 class readQR : AppCompatActivity() {
 
@@ -36,10 +35,24 @@ class readQR : AppCompatActivity() {
     
     private lateinit var res_txt: TextView
     private lateinit var btn_take: Button
+
+    private var capture: CaptureManagerCustom? = null
+    private var barcodeScannerView: DecoratedBarcodeView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         Log.d(TAG, "onCreate()")
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_read_qr)
+        Log.d(TAG, "barcode init...")
+        barcodeScannerView = initializeContent()
+
+        Log.d(TAG, "capture init...")
+        capture = CaptureManagerCustom(this, barcodeScannerView!!)
+        if (capture != null){
+            Log.d(TAG, "capture not null.")
+            capture!!.initializeFromIntent(getIntent(), savedInstanceState)
+            capture!!.decode()
+        }
+        Log.d(TAG, "init done.")
 
         window.statusBarColor = resources.getColor(R.color.black)
 
@@ -51,6 +64,7 @@ class readQR : AppCompatActivity() {
 //        toolbar.title = resources.getString(R.string.settings)
 //        toolbar.setTitleTextColor(resources.getColor(R.color.black))
         toolbar.setBackgroundColor(resources.getColor(R.color.main_color))
+
 
 
 
@@ -66,40 +80,72 @@ class readQR : AppCompatActivity() {
 
         res_txt = findViewById<TextView>(R.id.txt_res)
         btn_take = findViewById<Button>(R.id.button)
+        btn_take.setBackgroundColor(resources.getColor(R.color.main_color))
         btn_take.setOnClickListener {
-            val intentIntegrator = IntentIntegrator(this)
-            intentIntegrator.setBeepEnabled(false)
-            intentIntegrator.setPrompt("Scan a barcode or QR code")
-            intentIntegrator.setOrientationLocked(false)
-            intentIntegrator.setBarcodeImageEnabled(false)
-            intentIntegrator.setCaptureActivity(QR_taker::class.java)
-            intentIntegrator.initiateScan()
-
-
-
+//            val intentIntegrator = IntentIntegrator(this)
+//            intentIntegrator.setBeepEnabled(false)
+//            intentIntegrator.setPrompt("Scan a barcode or QR code")
+//            intentIntegrator.setOrientationLocked(false)
+//            intentIntegrator.setBarcodeImageEnabled(false)
+//            intentIntegrator.setCaptureActivity(QR_taker::class.java)
+//            intentIntegrator.initiateScan()
+            res_txt.setText("back")
+            finish()
         }
+
+
+
+        Log.d(TAG, "onCreate() Done!")
     }
 
     override fun onResume() {
         super.onResume()
-//        setContentView(R.layout.activity_qr_taker)
-//        val d = findViewById<View>(R.id.qr_view) as DecoratedBarcodeView
+        capture?.onResume()
 
     }
 
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-
-        val res = IntentIntegrator.parseActivityResult(resultCode, data)
-        if (res != null){
-            if (res.contents == null){
-                Toast.makeText(baseContext, "Cancelled", Toast.LENGTH_SHORT).show()
-            } else {
-                res_txt.setText("res: ${res.contents} | ${res.formatName}")
-            }
-        }
+    override fun onPause() {
+        super.onPause()
+        capture?.onPause()
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        capture?.onDestroy()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        super.onSaveInstanceState(outState, outPersistentState)
+        capture?.onSaveInstanceState(outState)
+    }
+
+
+    protected fun initializeContent(): DecoratedBarcodeView {
+//        setContentView(com.google.zxing.client.android.R.layout.zxing_capture)
+//        return findViewById(com.google.zxing.client.android.R.id.zxing_barcode_scanner)
+        setContentView(R.layout.activity_read_qr)
+        return findViewById(R.id.qr_view)
+    }
+
+
+
+
+//    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+//        super.onActivityResult(requestCode, resultCode, data)
+//
+//        val res = IntentIntegrator.parseActivityResult(resultCode, data)
+//        if (res != null){
+//            if (res.contents == null){
+//                Toast.makeText(baseContext, "Cancelled", Toast.LENGTH_SHORT).show()
+//            } else {
+//                res_txt.setText("res: ${res.contents} | ${res.formatName}")
+//            }
+//        }
+//    }
+
+
+
+
 
 //            AlertDialog.Builder(this).setMessage("Would you like to go to ${res.contents}?")
 //                .setPositiveButton("Accept", DialogInterface.OnClickListener{
@@ -146,6 +192,7 @@ class readQR : AppCompatActivity() {
             finish()
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        capture?.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     private fun isCameraAvailable(): Boolean {
@@ -156,7 +203,8 @@ class readQR : AppCompatActivity() {
 
 
     private fun openCamera() {
-        Log.d(TAG, "openCamere()")
+        Log.d(TAG, "openCamera()")
+        return
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
         cameraProviderFuture.addListener({
             val cameraProvider = cameraProviderFuture.get()

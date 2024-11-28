@@ -11,13 +11,14 @@ import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.widget.Toolbar
-
+import com.google.zxing.integration.android.IntentIntegrator
 
 
 class ChooseInput : AppCompatActivity() {
-
+    private val TAG = "ChooseInput"
     lateinit var txt_status: TextView
     lateinit var btn_add: Button
     lateinit var input_number: TextView
@@ -33,7 +34,7 @@ class ChooseInput : AppCompatActivity() {
         startActivity(intent)
     }
     override fun onCreate(savedInstanceState: Bundle?) {
-        val TAG = "ChooseInput"
+
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choose_input)
 
@@ -56,8 +57,9 @@ class ChooseInput : AppCompatActivity() {
             val intent = Intent(this, readQR::class.java)
             startActivity(intent)
             //
-            val qr_data = pref.get_str("qr_code") // need handler or in onResume()
+//            val qr_data = pref.get_str("qr_code") // need handler or in onResume()
             // set qr_data to input field
+
         }
         val pref = SharedPreference(this)
         val btn_apply = findViewById<Button>(R.id.btn_apply)
@@ -104,6 +106,36 @@ class ChooseInput : AppCompatActivity() {
 
     }
 
+
+
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        Log.d(TAG, "onActivityResult()")
+
+        val res = IntentIntegrator.parseActivityResult(resultCode, data)
+        Log.d(TAG, "res: $res")
+        if (res != null){
+            if (res.contents == null){
+                Toast.makeText(baseContext, "Cancelled", Toast.LENGTH_SHORT).show()
+            } else {
+                Log.d(TAG, "\"res: ${res.contents} | ${res.formatName}\"")
+                input_number.setText(res.contents)
+
+                val intentIntegrator = IntentIntegrator(this)
+                intentIntegrator.setBeepEnabled(false)
+                intentIntegrator.setPrompt("Scan a barcode or QR code")
+                intentIntegrator.setOrientationLocked(false)
+                intentIntegrator.setBarcodeImageEnabled(false)
+                intentIntegrator.setCaptureActivity(readQR::class.java)
+                intentIntegrator.initiateScan()
+            }
+        }
+        Log.d(TAG, "END")
+    }
+
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.main_menu, menu)
@@ -123,6 +155,7 @@ class ChooseInput : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        Log.d(TAG, "onResume()")
         val pref = SharedPreference(this)
         val d_status = pref.get_str("device_status")
         btn_add.visibility = View.INVISIBLE
@@ -145,5 +178,6 @@ class ChooseInput : AppCompatActivity() {
             txt_status.text = ""
         }
         pref.set_str("device_status", "")
+        Log.d(TAG, "END")
     }
 }
