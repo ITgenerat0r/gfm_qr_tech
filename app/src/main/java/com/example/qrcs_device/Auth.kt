@@ -34,6 +34,7 @@ class Auth : AppCompatActivity() {
         window.statusBarColor = resources.getColor(R.color.black)
 
         signin_btn.setBackgroundColor(resources.getColor(R.color.main_color))
+        signin_btn.setTextColor(resources.getColor(R.color.main_text))
         signin_btn.setOnClickListener {
             val cntr = Controller(this)
             if (!cntr.checkForInternet()){

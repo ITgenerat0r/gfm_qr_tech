@@ -186,7 +186,7 @@ class readQR : AppCompatActivity() {
                 for (g in groups_rx.split('|')){
                     groups.add(g)
                 }
-                if ("admins" in groups || "editors" in groups){
+                if ("admins" in groups || "editors" in groups || "workers" in groups){
                     btn_take.setImageResource(R.drawable.baseline_add_24)
                     pref.set_str("btn_action", "add")
                 } else {

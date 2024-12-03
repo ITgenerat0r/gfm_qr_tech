@@ -46,11 +46,13 @@ class ChooseInput : AppCompatActivity() {
         btn_add = findViewById(R.id.btn_add_device)
         btn_add.visibility = View.INVISIBLE
 
+
         window.statusBarColor = resources.getColor(R.color.black)
 
 
         val btn_qr = findViewById<Button>(R.id.btn_read_qr)
         btn_qr.setBackgroundColor(resources.getColor(R.color.main_color))
+        btn_qr.setTextColor(resources.getColor(R.color.main_text))
         btn_qr.setOnClickListener {
             val pref = SharedPreference(this)
 //            pref.set_str("qr_code", "")
@@ -66,6 +68,7 @@ class ChooseInput : AppCompatActivity() {
         val pref = SharedPreference(this)
         val btn_apply = findViewById<Button>(R.id.btn_apply)
         btn_apply.setBackgroundColor(resources.getColor(R.color.main_color))
+        btn_apply.setTextColor(resources.getColor(R.color.main_text))
         btn_apply.setOnClickListener {
             var serial_number = 0
 
@@ -95,6 +98,7 @@ class ChooseInput : AppCompatActivity() {
 
         val btn_add_device: Button = findViewById(R.id.btn_add_device)
         btn_add_device.setBackgroundColor(resources.getColor(R.color.main_color))
+        btn_add_device.setTextColor(resources.getColor(R.color.main_text))
         btn_add_device.setOnClickListener {
             val pref = SharedPreference(this)
             var serial_number = pref.get_int("serial_number")
@@ -193,6 +197,7 @@ class ChooseInput : AppCompatActivity() {
         val pref = SharedPreference(this)
         val d_status = pref.get_str("device_status")
         btn_add.visibility = View.INVISIBLE
+        btn_add.setTextColor(resources.getColor(R.color.main_text))
         if (d_status == "none"){
             val ip = pref.get_str("server_ip")
             val port = pref.get_int("server_port")
@@ -203,7 +208,7 @@ class ChooseInput : AppCompatActivity() {
                 groups.add(g)
             }
             txt_status.text = getString(R.string.device_not_exist)
-            if ("editors" in groups || "admins" in groups){
+            if ("editors" in groups || "admins" in groups || "workers" in groups){
                 btn_add.visibility = View.VISIBLE
             }
         } else if (d_status == "error"){

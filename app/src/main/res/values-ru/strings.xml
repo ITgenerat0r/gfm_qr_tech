@@ -10,9 +10,9 @@
     <string name="in_developing">В разработке.</string>
     <string name="wrong_login">Неверный логин или пароль.</string>
     <string name="input_type">Выберите способ ввода</string>
-    <string name="serial_number">Serial number</string>
-    <string name="apply">Apply</string>
-    <string name="read_qr_code">Read QR code</string>
+    <string name="serial_number">Заводской номер</string>
+    <string name="apply">Применить</string>
+    <string name="read_qr_code">Сканировать QR код</string>
     <string name="decimal_number">Децимальный номер</string>
     <string name="device_name">Название</string>
     <string name="device_type">Тип</string>
@@ -25,12 +25,12 @@
     <string name="version">Версия приложения</string>
     <string name="check_internet">Проверьте интернет соединение</string>
     <string name="settings">Настройки</string>
-    <string name="txt_cac">Check after compound</string>
-    <string name="txt_chk">Check</string>
-    <string name="txt_debug">Debug</string>
-    <string name="txt_abc">Assembly before compound</string>
-    <string name="txt_aac">Assembly after compound</string>
-    <string name="txt_cal">Calibrate</string>
-    <string name="device_not_exist_in_database">Device not exist in database</string>
-    <string name="txt_cli">Climat</string>
+    <string name="txt_cac">Проверка после заливки</string>
+    <string name="txt_chk">Проверка</string>
+    <string name="txt_debug">Отладка</string>
+    <string name="txt_abc">Сборка перед заливкой</string>
+    <string name="txt_aac">Сборка после заливки</string>
+    <string name="txt_cal">Калибровка</string>
+    <string name="device_not_exist_in_database">Устройства нет в базе данных</string>
+    <string name="txt_cli">Климат</string>
 </resources>

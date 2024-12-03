@@ -35,6 +35,7 @@ class ButtonsAdapter(private var activity: Activity, private var items: ArrayLis
             this.context = cnt
 
             this.btn.setBackgroundColor(context.resources.getColor(R.color.main_color))
+            this.btn.setTextColor(context.resources.getColor(R.color.main_text))
             change_img(false, 0)
         }
 
