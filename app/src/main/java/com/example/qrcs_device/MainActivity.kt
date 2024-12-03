@@ -60,6 +60,10 @@ class MainActivity : AppCompatActivity() {
         preferences.set_str("server_ip", ip)
         preferences.set_int("server_port", port)
         preferences.set_int("session", 0)
+        preferences.set_str("QR_result", "")
+        preferences.set_bool("restartQR", false)
+
+
 
         window.statusBarColor = resources.getColor(R.color.black)
 

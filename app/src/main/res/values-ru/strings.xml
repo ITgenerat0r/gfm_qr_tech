@@ -25,4 +25,12 @@
     <string name="version">Версия приложения</string>
     <string name="check_internet">Проверьте интернет соединение</string>
     <string name="settings">Настройки</string>
+    <string name="txt_cac">Check after compound</string>
+    <string name="txt_chk">Check</string>
+    <string name="txt_debug">Debug</string>
+    <string name="txt_abc">Assembly before compound</string>
+    <string name="txt_aac">Assembly after compound</string>
+    <string name="txt_cal">Calibrate</string>
+    <string name="device_not_exist_in_database">Device not exist in database</string>
+    <string name="txt_cli">Climat</string>
 </resources>

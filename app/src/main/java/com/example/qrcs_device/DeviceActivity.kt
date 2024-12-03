@@ -82,7 +82,7 @@ class DeviceActivity : AppCompatActivity() {
             Log.d(TAG, "Row: ${row[0]}, ${row[1]}.")
         }
         text_device.text = getString(R.string.serial_number) + ": " + device.get_serial_number()
-        text_device.text = "${text_device.text}\n${getString(R.string.decimal_number)}: МКЦБ." + device.get_decimal_number()
+        text_device.text = "${text_device.text}\n${getString(R.string.decimal_number)}: " + device.get_decimal_number()
         text_device.text = "${text_device.text}\n${getString(R.string.device_name)}: ${device.get_name()}"
         text_device.text = "${text_device.text}\n${getString(R.string.device_type)}: ${device.get_type()}"
         // ====================================================================

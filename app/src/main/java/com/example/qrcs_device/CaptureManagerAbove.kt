@@ -29,6 +29,7 @@ import com.journeyapps.barcodescanner.BarcodeCallback
 import com.journeyapps.barcodescanner.BarcodeResult
 import com.journeyapps.barcodescanner.CameraPreview.StateListener
 import com.journeyapps.barcodescanner.DecoratedBarcodeView
+import kotlinx.coroutines.currentCoroutineContext
 
 import java.io.File
 import java.io.FileOutputStream
@@ -320,6 +321,9 @@ class CaptureManagerCustom(
         activity.setResult(Activity.RESULT_OK, intent)
         Log.d("QRactivity", "result: ${intent.getStringExtra(Intents.Scan.RESULT)}")
 //        closeAndFinish()
+        val preference = SharedPreference(context = this.activity)
+        intent.getStringExtra(Intents.Scan.RESULT)?.let { preference.set_str("QR_result", it) }
+        closeAndFinish()
 
     }
 

@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.ActionBar
@@ -38,6 +39,7 @@ class ChooseInput : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_choose_input)
 
+        input_number = findViewById<EditText>(R.id.input_serial_number)
 
         txt_status = findViewById(R.id.textView_status)
         txt_version = findViewById(R.id.textView_version)
@@ -51,7 +53,7 @@ class ChooseInput : AppCompatActivity() {
         btn_qr.setBackgroundColor(resources.getColor(R.color.main_color))
         btn_qr.setOnClickListener {
             val pref = SharedPreference(this)
-            pref.set_str("qr_code", "")
+//            pref.set_str("qr_code", "")
             // run QR reader here
 
             val intent = Intent(this, readQR::class.java)
@@ -65,7 +67,6 @@ class ChooseInput : AppCompatActivity() {
         val btn_apply = findViewById<Button>(R.id.btn_apply)
         btn_apply.setBackgroundColor(resources.getColor(R.color.main_color))
         btn_apply.setOnClickListener {
-            input_number = findViewById<EditText>(R.id.input_serial_number)
             var serial_number = 0
 
             if(input_number.text.toString() != ""){
@@ -104,6 +105,39 @@ class ChooseInput : AppCompatActivity() {
             }
         }
 
+        val btn_decrease = findViewById<ImageView>(R.id.btn_decrease)
+        val btn_increase = findViewById<ImageView>(R.id.btn_increase)
+        btn_decrease.setColorFilter(resources.getColor(R.color.main_color))
+        btn_increase.setColorFilter(resources.getColor(R.color.main_color))
+        btn_decrease.setOnClickListener {
+            Log.d(TAG, "decrease")
+            serial_number_add(-1)
+        }
+        btn_increase.setOnClickListener {
+            Log.d(TAG, "increase")
+            serial_number_add(1)
+        }
+
+    }
+
+    private fun serial_number_add(k: Int){
+        var sn = input_number.text.toString()
+        Log.d(TAG, "number: $sn")
+        if (sn != ""){
+            Log.d(TAG, "not empty")
+            try {
+                val nn = sn.toInt() + k
+                Log.d(TAG, "new number: $nn")
+                if (nn > 0){
+                    input_number.setText("$nn")
+                    val pref = SharedPreference(this)
+                    pref.set_int("serial_number", nn)
+                }
+                Log.d(TAG, "done.")
+            } catch (e: Exception){
+                Log.d(TAG, "wrong number")
+            }
+        }
     }
 
 
@@ -177,7 +211,26 @@ class ChooseInput : AppCompatActivity() {
         } else {
             txt_status.text = ""
         }
+        val sn = pref.get_str("QR_result")
+        Log.d(TAG, "QR result: $sn")
+        if (sn != ""){
+            Log.d(TAG, "qr not empty")
+            val intxt = findViewById<EditText>(R.id.input_serial_number)
+            try {
+                pref.set_int("serial_number", sn.toInt())
+            } catch (e: Exception){
+                Log.d(TAG, "wrong serial number")
+            }
+
+
+            intxt.setText("$sn")
+        }
+//        pref.set_str("QR_result", "")
         pref.set_str("device_status", "")
+        if (pref.get_bool("restartQR")){
+            val intent = Intent(this, readQR::class.java)
+            startActivity(intent)
+        }
         Log.d(TAG, "END")
     }
 }
