@@ -246,6 +246,19 @@ class Techno(Database):
             self._commit(f"insert into devices({fields}) value({values})")
             return 1
 
+    def update_device(self, number, decimal="", name=""):
+        if number:
+            dt = self._fetchall(f"select * from devices where serial_number = {number}")
+            if len(dt):
+                fields = "serial_number"
+                values = f"{number}"
+                if decimal:
+                    self._commit(f"update devices set decimal_number = '{decimal}' where serial_number = {number}")
+                if name:
+                    self._commit(f"update devices set d_name = '{name}' where serial_number = {number}")
+                return 1
+            return 0
+
 
 
     def delete_device(self, number):

@@ -18,7 +18,7 @@ import java.util.Arrays
 
 class MainActivity : AppCompatActivity() {
 
-    val version = "2.2"
+    val version = "2.3"
 
     var ip = "82.116.49.241"
     var port = 24116

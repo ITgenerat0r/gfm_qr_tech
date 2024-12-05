@@ -1,5 +1,6 @@
 package com.example.qrcs_device
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -165,6 +166,8 @@ class DeviceActivity : AppCompatActivity() {
         if (!("admin" in groups || "editors" in groups)){
             val item = menu?.findItem(R.id.id_delete_device)
             item?.setVisible(false)
+            val item_e = menu?.findItem(R.id.id_edit_device)
+            item_e?.setVisible(false)
         }
 
         return super.onCreateOptionsMenu(menu)
@@ -175,6 +178,10 @@ class DeviceActivity : AppCompatActivity() {
             Log.d(TAG, "DELETE")
             cntr.send("deletedevice ${login} ${serial_number}")
             Log.d(TAG, "DONE")
+        } else if (item.itemId == R.id.id_edit_device){
+            pref.set_str("add_action", "edit")
+            val intent = Intent(this, AddDeviceActivity::class.java)
+            startActivity(intent)
         }
         finish()
         return super.onOptionsItemSelected(item)

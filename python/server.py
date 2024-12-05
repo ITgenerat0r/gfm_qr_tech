@@ -168,7 +168,30 @@ def handler(conn, addr):
 					elif key == "type":
 						tp = value
 				cn.send('ok')
-				res = db.add_device(serial, decimal, name, tp)
+				res = db.add_device(serial, decimal, name)
+				print(f"add status: {res}")
+			elif ldata.get(0) == "updatedevice":
+				login = ldata.get(1)
+				data = ldata.get(2)
+				serial = ""
+				decimal = ""
+				name = ""
+				tp = ""
+				for i in data.split('|'):
+					kv = i.split(':')
+					print(kv)
+					key = kv[0]
+					value = kv[1]
+					if key == "serial":
+						serial = value
+					elif key == "decimal":
+						decimal = value
+					elif key == "name":
+						name = value
+					elif key == "type":
+						tp = value
+				cn.send('ok')
+				res = db.update_device(serial, decimal, name)
 				print(f"add status: {res}")
 			elif ldata.get(0) == "deletedevice":
 				login = ldata.get(1)

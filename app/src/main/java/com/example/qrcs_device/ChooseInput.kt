@@ -102,6 +102,7 @@ class ChooseInput : AppCompatActivity() {
         btn_add_device.setOnClickListener {
             val pref = SharedPreference(this)
             var serial_number = pref.get_int("serial_number")
+            pref.set_str("add_action", "add")
 
             if(serial_number > 0){
                 val intent = Intent(this, AddDeviceActivity::class.java)

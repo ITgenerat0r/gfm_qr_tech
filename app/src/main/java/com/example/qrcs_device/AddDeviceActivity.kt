@@ -42,6 +42,7 @@ class AddDeviceActivity : AppCompatActivity() {
         val port = pref.get_int("server_port")
         cntr = Controller(this)
         login = pref.get_str("login")
+        val act = pref.get_str("add_action")
 
         val toolbar: Toolbar = findViewById(R.id.toolbar_add_device)
         setSupportActionBar(toolbar)
@@ -51,23 +52,34 @@ class AddDeviceActivity : AppCompatActivity() {
 
 //        login = pref.get_str("login")
         val serial_number = pref.get_int("serial_number")
+        val decimal_number = pref.get_str("decimal")
+        val device_name = pref.get_str("device_name")
         toolbar.title = serial_number.toString()
         toolbar.setTitleTextColor(resources.getColor(R.color.black))
         toolbar.setBackgroundColor(resources.getColor(R.color.main_color))
 
+        input_decimal.setText(decimal_number)
+        input_name.setText(device_name)
+
         btn_apply.setBackgroundColor(resources.getColor(R.color.main_color))
         btn_apply.setTextColor(resources.getColor(R.color.main_text))
         btn_apply.setOnClickListener {
-            var tx: String = "createdevice ${login} serial:${serial_number}"
+            var cmd = ""
+            if (act == "add"){
+                cmd = "createdevice"
+            } else if (act == "edit"){
+                cmd = "updatedevice"
+            }
+            var tx: String = "$cmd ${login} serial:${serial_number}"
             if(input_decimal.text.toString() != ""){
                 tx += "|decimal:${input_decimal.text}"
             }
             if(input_name.text.toString() != ""){
                 tx += "|name:${input_name.text}"
             }
-            if(input_type.text.toString() != ""){
-                tx += "|type:${input_type.text}"
-            }
+//            if(input_type.text.toString() != ""){
+//                tx += "|type:${input_type.text}"
+//            }
             val rx = cntr.send(tx)
             Log.d(TAG, rx)
             pref.set_int("serial_number", serial_number)

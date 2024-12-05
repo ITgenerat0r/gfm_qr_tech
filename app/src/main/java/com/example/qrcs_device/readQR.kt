@@ -111,7 +111,17 @@ class readQR : AppCompatActivity() {
         txt_info = findViewById(R.id.txt_info)
         res_txt = findViewById<TextView>(R.id.txt_res)
         var sn = pref.get_str("QR_result")
-        setup_serial_number(sn)
+        var sn_data = sn.split("|")
+        pref.set_str("serial_number", sn_data[0])
+        if (sn_data.size > 1){
+            pref.set_str("decimal", sn_data[1])
+        }
+        if (sn_data.size > 2){
+            pref.set_str("device_name", sn_data[2])
+        }
+
+        setup_serial_number(sn_data[0])
+
 
 
 //        Log.d(TAG, "pre")
@@ -145,6 +155,8 @@ class readQR : AppCompatActivity() {
                 startActivity(intent)
             } else if (a == "add"){
                 // need access
+
+                pref.set_str("add_action", "add")
                 val intent = Intent(this, AddDeviceActivity::class.java)
                 startActivity(intent)
             }
@@ -157,6 +169,7 @@ class readQR : AppCompatActivity() {
 
 
     private fun setup_serial_number(sn: String){
+        Log.d(TAG, "setup_serial_number $sn")
         txt_info.setText("")
         if (sn == ""){
             res_txt.setText("--------")
