@@ -218,18 +218,19 @@ class ChooseInput : AppCompatActivity() {
             txt_status.text = ""
         }
         val sn = pref.get_str("QR_result")
+        val sn_data = sn.split("|")
         Log.d(TAG, "QR result: $sn")
         if (sn != ""){
             Log.d(TAG, "qr not empty")
             val intxt = findViewById<EditText>(R.id.input_serial_number)
             try {
-                pref.set_int("serial_number", sn.toInt())
+                pref.set_int("serial_number", sn_data[0].toInt())
             } catch (e: Exception){
                 Log.d(TAG, "wrong serial number")
             }
 
 
-            intxt.setText("$sn")
+            intxt.setText("${sn_data[0]}")
         }
 //        pref.set_str("QR_result", "")
         pref.set_str("device_status", "")
