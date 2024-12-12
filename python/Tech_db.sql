@@ -40,13 +40,22 @@ CREATE TABLE operations
     CONSTRAINT PK_operations PRIMARY KEY(id)
 );
 
+
+CREATE TABLE decimals
+(
+    id int not null AUTO_INCREMENT,
+    num varchar(32) unique,
+    d_name varchar(256),
+    d_type varchar(128),
+    CONSTRAINT PK_decimals PRIMARY KEY(id)
+);
+
 CREATE TABLE devices
 (
     serial_number int not null unique,
-    decimal_number varchar(32),
-    d_name varchar(256),
-    d_type varchar(128),
-    CONSTRAINT PK_devices PRIMARY KEY(serial_number)
+    decimal_id int,
+    CONSTRAINT PK_devices PRIMARY KEY(serial_number),
+    CONSTRAINT FK_devices FOREIGN KEY(decimal_id) REFERENCES decimals(id)
 );
 
 

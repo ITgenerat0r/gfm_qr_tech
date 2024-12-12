@@ -168,7 +168,11 @@ def handler(conn, addr):
 					elif key == "type":
 						tp = value
 				cn.send('ok')
-				res = db.add_device(serial, decimal, name)
+				dd = db.get_decimal_by_num(decimal)
+				decimal_id = 0
+				if len(dd):
+					decimal_id = dd['id']
+				res = db.add_device(serial, decimal_id)
 				print(f"add status: {res}")
 			elif ldata.get(0) == "updatedevice":
 				login = ldata.get(1)
@@ -191,7 +195,26 @@ def handler(conn, addr):
 					elif key == "type":
 						tp = value
 				cn.send('ok')
-				res = db.update_device(serial, decimal, name)
+				dev = db.get_device(serial)
+				decimal_id = 0
+				res = 0
+				if len(dev):
+					decimal_id  = dev['decimal_id']
+					dec = db.get_decimal(decimal_id)
+					if len(dec):
+						if decimal == dec['num']:
+							db.update_decimal_name(decimal_id, name)
+							db.update_decimal_type(decimal_id, type)
+							res = 1
+						else:
+							decbn = db.get_decimal_by_num(decimal)
+							if len(decbn):
+								res = db.update_device(serial, decbn['id'])
+								db.update_decimal_name(decbn['id'], name)
+								db.update_decimal_type(decbn['id'], type)
+							else:
+								res = db.add_decimal(decimal, name, type)
+				# res = db.update_device(serial, decimal_id)
 				print(f"add status: {res}")
 			elif ldata.get(0) == "deletedevice":
 				login = ldata.get(1)

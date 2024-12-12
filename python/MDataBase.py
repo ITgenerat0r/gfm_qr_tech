@@ -221,13 +221,86 @@ class Techno(Database):
             return ""
 
 
-    def get_device(self, number):
-        data = self._fetchall(f"select * from devices where serial_number = {number}")
+
+
+
+
+
+    def add_decimal(self, number, name="", type=""):
+        if number:
+            dt = self._fetchall(f"select * from decimals where num = '{number}'")
+            if len(dt):
+                return 0
+            fields = "num"
+            values = f"'{number}'"
+            if name:
+                fields += ", d_name"
+                values += f", '{name}'"
+            if type:
+                fields += ", d_type"
+                values += f", '{type}'"
+            self._commit(f"insert into decimals({fields}) value({values})")
+            return 1
+        return 0
+
+
+    def get_decimal(self, id):
+        data = self._fetchall(f"select * from decimals where id = {id}")
         if len(data):
             return data[0]
         return {}
 
-    def add_device(self, number, decimal="", name="", type=""):
+    def get_decimal_by_num(self, number):
+        data = self._fetchall(f"select * from decimals where num = '{number}'")
+        if len(data):
+            return data[0]
+        return {}
+
+
+    def update_decimal_num(self, id, number):
+        if id:
+            dt = self._fetchall(f"select * from decimals where id = {id}")
+            if len(dt):
+                if number:
+                    self._commit(f"update devices set num = '{number}' where id = {id}")
+                    return 1
+        return 0
+
+    def update_decimal_name(self, id, name):
+        if id:
+            dt = self._fetchall(f"select * from decimals where id = {id}")
+            if len(dt):
+                if name:
+                    self._commit(f"update devices set d_name = '{name}' where id = {id}")
+                    return 1
+        return 0
+
+
+    def update_decimal_type(self, id, type):
+        if id:
+            dt = self._fetchall(f"select * from decimals where id = {id}")
+            if len(dt):
+                if type:
+                    self._commit(f"update devices set d_type = '{type}' where id = {id}")
+                    return 1
+        return 0
+
+
+
+
+
+
+
+
+
+
+    def get_device(self, number):
+        data = self._fetchall(f"select * from devices LEFT JOIN decimals ON devices.decimal_id = decimals.id where serial_number = {number}")
+        if len(data):
+            return data[0]
+        return {}
+
+    def add_device(self, number, decimal=""):
         if number:
             dt = self._fetchall(f"select * from devices where serial_number = {number}")
             if len(dt):
@@ -235,27 +308,18 @@ class Techno(Database):
             fields = "serial_number"
             values = f"{number}"
             if decimal:
-                fields += ", decimal_number"
-                values += f", '{decimal}'"
-            if name:
-                fields += ", d_name"
-                values += f", '{name}'"
-            if type:
-                fields += ", d_type"
-                values += f", '{type}'"
+                d_num = self.get_decimal_by_num(decimal)
+                if len(d_num):
+                    fields += ", decimal_id"
+                    values += f", '{d_num['id']}'"
             self._commit(f"insert into devices({fields}) value({values})")
             return 1
 
-    def update_device(self, number, decimal="", name=""):
-        if number:
+    def update_device(self, number, decimal=0):
+        if number and decimal:
             dt = self._fetchall(f"select * from devices where serial_number = {number}")
             if len(dt):
-                fields = "serial_number"
-                values = f"{number}"
-                if decimal:
-                    self._commit(f"update devices set decimal_number = '{decimal}' where serial_number = {number}")
-                if name:
-                    self._commit(f"update devices set d_name = '{name}' where serial_number = {number}")
+                self._commit(f"update devices set decimal_id = '{decimal}' where serial_number = {number}")
                 return 1
             return 0
 
@@ -264,6 +328,14 @@ class Techno(Database):
     def delete_device(self, number):
         self._commit(f"delete from operations where serial_number = {number}")
         self._commit(f"delete from devices where serial_number = {number}")
+
+
+
+
+
+
+
+
 
     def login(self, login, password):
         worker = self.get_worker(login)
