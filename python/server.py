@@ -114,7 +114,7 @@ def handler(conn, addr):
 					print("device")
 					print(device)
 					device_data = f"serial_number:{device['serial_number']}|"
-					device_data += f"decimal_number:{device['decimal_number']}|"
+					device_data += f"decimal_number:{device['num']}|"
 					device_data += f"d_name:{device['d_name']}|"
 					device_data += f"d_type:{device['d_type']}"
 					cn.send(device_data)
