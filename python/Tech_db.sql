@@ -16,8 +16,8 @@ CREATE TABLE workers
 CREATE TABLE wg_bonds
 (
     id int not null AUTO_INCREMENT,
-    w_login varchar(256) not null,
-    g_name varchar(256) not null,
+    w_login int not null,
+    g_name int not null,
     constraint PK_bonds primary key(id)
 );
 

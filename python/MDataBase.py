@@ -333,6 +333,35 @@ class Techno(Database):
 
 
 
+    def get_group(self, id):
+        if id:
+            dt = self._fetchall(f"select * from user_groups where id = {id}")
+            if len(dt):
+                return dt[0]
+        return {}
+
+
+    def add_group(self, name, access_level=0):
+        if name:
+            g = self._fetchall(f"select * from user_groups where g_name = '{name}'")
+            if not len(g):
+                self._commit(f"insert into user_groups (g_name, access) values ('{name}', {access_level})")
+                return 1
+        return 0
+
+
+    def add_user_to_group(self, user_id, group_id):
+        if user_id and group_id:
+            dt = self._fetchall(f"select * from wg_bonds where w_login = {user_id} and g_name = {group_id}")
+            if not len(dt):
+                self._commit(f"insert into wg_bonds(w_login, g_name) values ({user_id}, {group_id})")
+                return 1
+        return 0
+
+
+
+
+
 
 
 
@@ -346,9 +375,11 @@ class Techno(Database):
 
 
     def get_worker_groups(self, worker_login):
-        data = self._fetchall(f"select * from wg_bonds where w_login = '{worker_login}'")
-        if data:
-            return data
+        user = self.get_worker(worker_login)
+        if len(user):
+            data = self._fetchall(f"select * from wg_bonds LEFT JOIN user_groups ON wg_bonds.g_name = user_groups.id where w_login = '{user['id']}'")
+            if data:
+                return data
         return {}
 
     def get_stages(self):
