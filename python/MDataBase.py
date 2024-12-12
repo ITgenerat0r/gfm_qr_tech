@@ -377,7 +377,8 @@ class Techno(Database):
     def get_worker_groups(self, worker_login):
         user = self.get_worker(worker_login)
         if len(user):
-            data = self._fetchall(f"select * from wg_bonds LEFT JOIN user_groups ON wg_bonds.g_name = user_groups.id where w_login = '{user['id']}'")
+            fields = "user_groups.*"
+            data = self._fetchall(f"select {fields} from wg_bonds LEFT JOIN user_groups ON wg_bonds.g_name = user_groups.id where w_login = '{user['id']}'")
             if data:
                 return data
         return {}
