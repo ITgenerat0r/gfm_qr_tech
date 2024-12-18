@@ -111,13 +111,21 @@ class readQR : AppCompatActivity() {
         txt_info = findViewById(R.id.txt_info)
         res_txt = findViewById<TextView>(R.id.txt_res)
         var sn = pref.get_str("QR_result")
+        Log.d(TAG, "QR RESULT: $sn")
         var sn_data = sn.split("|")
-        pref.set_str("serial_number", sn_data[0])
+        pref.set_str("serial_number_str", sn_data[0])
+        Log.d(TAG, "serial_number: ${sn_data[0]}")
         if (sn_data.size > 1){
             pref.set_str("decimal", sn_data[1])
+            Log.d(TAG, "decimal_number: ${sn_data[1]}")
+        } else {
+            pref.set_str("decimal", "")
         }
         if (sn_data.size > 2){
             pref.set_str("device_name", sn_data[2])
+            Log.d(TAG, "device_name: ${sn_data[2]}")
+        } else {
+            pref.set_str("device_name", "")
         }
 
         setup_serial_number(sn_data[0])
@@ -339,6 +347,7 @@ class readQR : AppCompatActivity() {
                     res_txt.setText("$nn")
                     val pref = SharedPreference(this)
                     pref.set_int("serial_number", nn)
+                    pref.set_str("serial_number_str", nn.toString())
                     setup_serial_number(nn.toString())
                 }
                 Log.d(TAG, "done.")
