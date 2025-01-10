@@ -33,7 +33,7 @@ class CapitalSerializer(serializers.Serializer):
 def get_decimals(request):
 	numbers = Decimals.objects.all().order_by("d_type")
 	ser = CapitalSerializer(instance = numbers, many=True)
-	data = f"{{'data': {ser.data}}}".replace('"', '').replace("'", '"')
+	data = f"{{'data': {ser.data}}}".replace('"', '').replace("'", '"').replace('None', '"Unknown"')
 	# data = f"{ser.data}".replace('"', '').replace("'", '"')
 
 	# print("----- DATA ---------------------------------------------")
