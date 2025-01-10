@@ -488,7 +488,7 @@ function readNames() {
   fetch("http://127.0.0.1:8000/get_decimals")
    .then(r => r.json())
    .then(j => makeSelectFromJson(j))
-   .catch(err => {setMsg("Ошибка загрузки справочника")});
+   .catch(err => {setMsg("Ошибка загрузки справочника"+err)});
  }
 }
 
