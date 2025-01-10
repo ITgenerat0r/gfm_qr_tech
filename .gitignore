@@ -18,3 +18,4 @@ python/__pycache__
 qrweb/__pycache__ 
 qrweb/qrweb/__pycache__ 
 qrweb/qrweb/apps/qr/__pycache__ 
+qrweb/qrweb/apps/qr/migrations/__pycache__
