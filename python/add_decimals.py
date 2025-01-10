@@ -4,7 +4,6 @@ from includes import *
 
 db = Techno(Config.host, Config.user, Config.password, Config.db_name)
 db.connect()
-db.set_time_out(DB_timeout)
 
 
 
