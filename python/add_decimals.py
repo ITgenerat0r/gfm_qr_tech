@@ -21,7 +21,7 @@ with open("raw_data.txt") as file:
 				if "Кедр" in tp:
 					tp = tp[5:]
 			tp = tp.rstrip()
-			db.add_decimal(mkcb, name, tp
+			db.add_decimal(mkcb, name, tp)
 			print(yellow_text(f"{mkcb}:{tp}({name})"))
 		else:
 			print(red_text(line.rstrip()))
