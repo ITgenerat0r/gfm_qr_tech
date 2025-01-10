@@ -9,18 +9,18 @@ db.set_time_out(DB_timeout)
 
 
 with open("raw_data.txt") as file:
-    for line in file:
-    	ind = line.rstrip().rfind("МКЦБ.")
-        if ind >= 0:
-        	mkcb = line.rstrip()[ind:]
-        	name = line[:ind-1].rstrip()
-        	tp = ""
-        	lk = name.find('"')
-        	rk = name.rfind('"')
-        	if lk >= 0 and rk >= 0:
-        		tp = name[lk:rk]
-        		if "Кедр" in tp:
-        			tp = tp[5:]
-        	print(yellow_text(f"{mkcb}:{tp}({name})"))
-        else:
-        	print(red_text(line.rstrip()))
+	for line in file:
+		ind = line.rstrip().rfind("МКЦБ.")
+		if ind >= 0:
+			mkcb = line.rstrip()[ind:]
+			name = line[:ind-1].rstrip()
+			tp = ""
+			lk = name.find('"')
+			rk = name.rfind('"')
+			if lk >= 0 and rk >= 0:
+				tp = name[lk:rk]
+				if "Кедр" in tp:
+					tp = tp[5:]
+			print(yellow_text(f"{mkcb}:{tp}({name})"))
+		else:
+			print(red_text(line.rstrip()))
