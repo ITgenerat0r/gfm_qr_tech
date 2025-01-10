@@ -25,7 +25,16 @@ def prt(text=""):
 	if logs:
 		print(text)
 
+last_cmd = ""
 for i in argv:
+	if i[0] == '-':
+		last_cmd = i
+	else:
+		if last_cmd == "-p" or last_cmd == "--port":
+			try:
+				PORT = int(i)
+			except Exception as e:
+				print(e)
 	if i == "-log":
 		try:
 			os.system('cls')
@@ -35,6 +44,7 @@ for i in argv:
 		print("Log enabled")
 		logs = True
 		print(f"Version {version}")
+
 
 
 
