@@ -92,7 +92,7 @@ DATABASES = {
     'tech_db': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'tech_db',
-        'USER': 'root',
+        'USER': 'gen',
         'PASSWORD': 'Heroin7+',
         'HOST': '127.0.0.1',
         'PORT': '3306',
