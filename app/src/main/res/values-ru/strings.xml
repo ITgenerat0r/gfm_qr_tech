@@ -33,4 +33,5 @@
     <string name="txt_cal">Калибровка</string>
     <string name="device_not_exist_in_database">Устройства нет в базе данных</string>
     <string name="txt_cli">Климат</string>
+    <string name="beep">Звуковой сигнал при считывании QR</string>
 </resources>

@@ -33,4 +33,5 @@
     <string name="txt_cal">Calibrate</string>
     <string name="device_not_exist_in_database">Device not exist in database</string>
     <string name="txt_cli">Climat</string>
+    <string name="beep">Beep after QR-code readed</string>
 </resources>

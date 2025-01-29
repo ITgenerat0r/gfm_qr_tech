@@ -2,22 +2,58 @@
 <head>
  <meta charset="utf-8"/>
  <style type="text/css">
-  html, body	{height: 90%; width: 90%;}
-  html 		{display: table; margin: auto;}
-  body		{display: table-cell; vertical-align: middle;}
-  *		{padding:8;}
-  svg		{padding:0; border:1px #eee solid;}
-  svg text	{font-size:1mm; text-anchor: middle;}
-  table td	{text-align: right;}
+  html, body  {height: 90%; width: 90%;}
+  html    {display: table; margin: auto;}
+  body    {display: table-cell; vertical-align: middle;}
+  *   {padding:8;}
+  svg   {padding:0; border:0px #eee solid;}
+  svg text  {font-size:0.6mm; text-anchor: middle;}
+  table td  {text-align: right;}
+  tr td         {padding:1.5mm 2mm 0mm;}
   
  @media print {
-  body {max-height: 100vh; max-width: 100vw; overflow: hidden; font-size:1.9vh; line-height:1.9vh; vertical-align: top;}
-  td { font-size:1.9vh; line-height:1.9vh; }
+  body          {max-height: 100vh; max-width: 100vw; overflow: hidden; vertical-align: top; }
+  html          {height: 100%; width: 100%; padding: 0; }
+  body          {height: 100%; width: 100%; padding: 5mm 2mm 0mm;}
+  *   {padding:0; margin: 0;}
   .no-print, .no-print * {display: none !important;}  
+  }
+  @page {
+   size: A4;
+   margin: 0mm 0mm 0mm 0mm;
   }
  </style>
  <script>
-     function QR8bitByte(data) {
+   /**
+ * @fileoverview
+ * - modified davidshimjs/qrcodejs library for use in node.js
+ * - Using the 'QRCode for Javascript library'
+ * - Fixed dataset of 'QRCode for Javascript library' for support full-spec.
+ * - this library has no dependencies.
+ *
+ * @version 0.9.1 (2016-02-12)
+ * @author davidshimjs, papnkukn
+ * @see <a href="http://www.d-project.com/" target="_blank">http://www.d-project.com/</a>
+ * @see <a href="http://jeromeetienne.github.com/jquery-qrcode/" target="_blank">http://jeromeetienne.github.com/jquery-qrcode/</a>
+ * @see <a href="https://github.com/davidshimjs/qrcodejs" target="_blank">https://github.com/davidshimjs/qrcodejs</a>
+ */
+
+//---------------------------------------------------------------------
+// QRCode for JavaScript
+//
+// Copyright (c) 2009 Kazuhiko Arase
+//
+// URL: http://www.d-project.com/
+//
+// Licensed under the MIT license:
+//   http://www.opensource.org/licenses/mit-license.php
+//
+// The word "QR Code" is registered trademark of 
+// DENSO WAVE INCORPORATED
+//   http://www.denso-wave.com/qrcode/faqpatent-e.html
+//
+//---------------------------------------------------------------------
+function QR8bitByte(data) {
   this.mode = QRMode.MODE_8BIT_BYTE;
   this.data = data;
   this.parsedData = [];
@@ -413,6 +449,7 @@ QRCode.prototype.save = function(file, callback) {
 if (typeof module != "undefined") {
   module.exports = QRCode;
 }
+
  </script>
 </head>
 <body>
@@ -422,52 +459,69 @@ if (typeof module != "undefined") {
 function generateImage(serial, type) {
  let value = serial + '|' + type;
  let qrcodeSvg = "";
- let qrcode = new QRCode({ content: value, width:19, height:19, offset:[3, 0], padding:0, join: true });
+ let qrcode = new QRCode({ content: value, width:16, height:16, offset:[4, 4], padding:1, join: true });
  qrcodeSvg = qrcode.svg({container:null});
- let o = "<svg viewBox=\"0 0 25 25\" xmlns=\"http://www.w3.org/2000/svg\">";
+ let o = "<svg viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\">";
  o += qrcodeSvg;
- o += "<text x=\"50%\" y=\"21.9\">"+serial+"</text> <text x=\"50%\" y=\"24.9\">"+type+"</text>";
+ o += "<text x=\"50%\" y=\"4\">"+serial+"</text>";
  o += "</svg>";
  return o;
 }
 
-function makeSelectFromText(text) {
- let si = document.getElementById("selectType");
+var product = [];
+
+function makeSelectName() {
  let sn = document.getElementById("selectName");
- let lines = text.split(/\r?\n|\r|\n/g);
- for (let n=0; n<text.length; n++) {
-  let row = lines[n];
-  if ((typeof row !== 'undefined')) {
-   row = row.split('\t');
-   if (row.length > 1) {
-    let o = document.createElement("option");
-    o.setAttribute("value", n);
-    o.innerHTML = row[0];
-    si.append(o);
-  
-    o = document.createElement("option");
-    o.setAttribute("value", n);
-    o.innerHTML = row[1];
-    sn.append(o);
-   }
-  }
+ for (let n=0; n<product.length; n++) {
+  let o = document.createElement("option");
+  o.setAttribute("value", n);
+  o.innerHTML = product[n].name;
+  sn.append(o);
  }
 }
 
-function makeSelectFromJson(j) {
+function makeSelectDecimal(pId) {
  let si = document.getElementById("selectType");
- let sn = document.getElementById("selectName");
- for (let n=0; n<j.data.length; n++) {
+ while (si.firstChild)
+  si.removeChild(si.lastChild); 
+ for (let n=0; n<product[pId].decimal.length; n++) {
   let o = document.createElement("option");
   o.setAttribute("value", n);
-  o.innerHTML = j.data[n].decimal;
+  o.innerHTML = product[pId].decimal[n];
   si.append(o);
-  
-  o = document.createElement("option");
-  o.setAttribute("value", n);
-  o.innerHTML = j.data[n].type;
-  sn.append(o);
  }
+ si.selectedIndex = 0;
+}
+
+function matchName(element) {
+  return element.name === this;
+}
+
+function makeProductFromJson(j) {
+ for (let n=0; n<j.data.length; n++) {
+  let e;
+  if (product.length)
+   e = product.find(matchName, j.data[n].name);
+  if (typeof e == "undefined") {
+   e = {name:j.data[n].name, decimal:[]};
+   product.push(e);
+  }
+  e.decimal.push(j.data[n].decimal);
+ }
+
+ product.sort((a, b) => {
+  const nameA = a.name.toUpperCase(); // ignore upper and lowercase
+  const nameB = b.name.toUpperCase(); // ignore upper and lowercase
+  if (nameA < nameB)
+   return -1;
+  if (nameA > nameB)
+   return 1;
+  return 0;
+ }
+ ); 
+ 
+ makeSelectName();
+ makeSelectDecimal(0);
 }
 
 function setMsg(msg) {
@@ -475,38 +529,24 @@ function setMsg(msg) {
  sn.innerHTML = msg;
 }
 
-const namesFromText = false;
 function readNames() {
  setMsg("");
- if (namesFromText) {
-  fetch("names.tsv")
-   .then(r => r.text())
-   .then(t => makeSelectFromText(t))
-   .catch(err => {setMsg("Ошибка загрузки справочника")});
- } else {
-  fetch("http://192.168.0.55:8000/get_decimals")
-   .then(r => r.json())
-   .then(j => makeSelectFromJson(j))
-   .catch(err => {setMsg("Ошибка загрузки справочника")});
- }
+ fetch("/get_decimals")
+// fetch("test.json")
+ .then(r => r.json())
+ .then(j => makeProductFromJson(j))
+ .catch(err => {setMsg("Ошибка загрузки справочника")});
 }
 
 function nameSelected() {
  let sn = document.getElementById("selectName");
- let si = document.getElementById("selectType");
  let i = sn.value;
- si.selectedIndex = i;
-}
-
-function typeSelected() {
- let st = document.getElementById("selectType");
- let sn = document.getElementById("selectName");
- let i = st.value;
- sn.selectedIndex = i;
+ makeSelectDecimal(i);
 }
 
 var sequenceId = 0;
-const columns = 4;
+const columns = 6;
+const rows = 9;
 
 // drop all sequence
 function drop(sequenceId)
@@ -517,6 +557,14 @@ function drop(sequenceId)
    break;
   e.remove();
  } while (1);
+}
+
+function countFix() {
+ const countLimit = 100;
+ let e = document.getElementById("count");
+ let cnt = e.value;
+ if (cnt > countLimit)
+  e.value = countLimit;
 }
 
 function addImages() {
@@ -548,13 +596,14 @@ function addImages() {
  r.appendChild(d);
  l.appendChild(r);
  
+ type = type.replace("МКЦБ.", "");
+ 
  let o = document.getElementById("output");
  do {
   r = document.createElement("tr");
   r.setAttribute("id", "seq"+sequenceId);
   for (let c = 0; c < columns; c++) {
    d = document.createElement("td");
-   d.setAttribute("width", (100 / columns)+"%");
    if (cnt > 0) {
     cnt--;
     d.innerHTML = generateImage(serial, type);
@@ -575,8 +624,8 @@ window.onload = function(e){
 <table class="no-print" width="100%">
  <tr>
   <td>Зав.номер с <input id="serial" type="number"></input></td>
-  <td>Кол-во <input id="count" type="number" min="1" max="50"></input></td>
-  <td><select id="selectType" onchange="typeSelected()"></select><select id="selectName" onchange="nameSelected()"></select></td>
+  <td>Кол-во <input id="count" type="number" min="1" max="100" oninput="countFix()"></input></td>
+  <td><select id="selectName" onchange="nameSelected()"></select> <select id="selectType"></select></td>
   <td><button id="button" type="button" onclick="addImages()" enabled>Добавить</button></td>
  </tr>
  <tr><td id="msg" colspan="4"></td></tr>

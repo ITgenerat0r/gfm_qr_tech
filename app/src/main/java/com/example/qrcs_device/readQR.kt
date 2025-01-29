@@ -72,7 +72,9 @@ class readQR : AppCompatActivity() {
         capture = CaptureManagerCustom(this, barcodeScannerView!!)
         if (capture != null){
             Log.d(TAG, "capture not null.")
-            capture!!.initializeFromIntent(getIntent(), savedInstanceState)
+            val int = getIntent()
+            int.putExtra(Intents.Scan.BEEP_ENABLED, pref.get_bool("BEEP_STATUS", true))
+            capture!!.initializeFromIntent(int, savedInstanceState)
             capture!!.decode()
         }
         Log.d(TAG, "init done.")

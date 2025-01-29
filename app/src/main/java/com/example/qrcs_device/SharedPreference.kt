@@ -43,9 +43,9 @@ class SharedPreference(val context: Context) {
         return sharedPref.getInt(KEY_NAME, 0)
     }
 
-    fun get_bool(KEY_NAME: String): Boolean {
+    fun get_bool(KEY_NAME: String, def: Boolean = false): Boolean {
         val sharedPref: SharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        return sharedPref.getBoolean(KEY_NAME, false)
+        return sharedPref.getBoolean(KEY_NAME, def)
     }
 
     fun clear() {

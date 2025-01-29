@@ -35,6 +35,7 @@ class Settings : AppCompatActivity() {
         val sw_abc = findViewById<Switch>(R.id.sw_abc)
         val sw_aac = findViewById<Switch>(R.id.sw_aac)
         val sw_cal = findViewById<Switch>(R.id.sw_cal)
+        val sw_beep = findViewById<Switch>(R.id.sw_beep)
 
 
 //        sw_cac.background.setTint(resources.getColor(R.color.main_color))
@@ -45,6 +46,7 @@ class Settings : AppCompatActivity() {
         sw_abc.thumbDrawable.setTint(resources.getColor(R.color.main_color))
         sw_aac.thumbDrawable.setTint(resources.getColor(R.color.main_color))
         sw_cal.thumbDrawable.setTint(resources.getColor(R.color.main_color))
+        sw_beep.thumbDrawable.setTint(resources.getColor(R.color.main_color))
 
         val pref = SharedPreference(this)
         val cac = pref.get_bool("CAC")  // Проверка после заливки
@@ -54,6 +56,10 @@ class Settings : AppCompatActivity() {
         val abc = pref.get_bool("ABC") // Сборка до заливки
         val aac = pref.get_bool("AAC") // Сборка после заливки
         val cal = pref.get_bool("CAL") // Калибровка
+
+        val beep_status = pref.get_bool("BEEP_STATUS", true)
+        sw_beep.isChecked = beep_status
+        changeSwitchColor(sw_beep)
 
         sw_cac.isChecked = cac
         sw_chk.isChecked = chk
@@ -112,6 +118,13 @@ class Settings : AppCompatActivity() {
             Log.d(TAG, "CAL: ${sw_cal.isChecked}")
             pref.set_bool("CAL", sw_cal.isChecked)
             changeSwitchColor(sw_cal)
+        }
+
+
+        sw_beep.setOnClickListener {
+            Log.d(TAG, "Beep: ${sw_beep.isChecked}")
+            pref.set_bool("BEEP_STATUS", sw_beep.isChecked)
+            changeSwitchColor(sw_beep)
         }
 
 
