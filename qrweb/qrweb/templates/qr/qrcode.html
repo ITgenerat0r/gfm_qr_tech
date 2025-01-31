@@ -227,8 +227,8 @@ window.onload = function(e){
   <td>Зав.номер с <input size="8" id="serial" type="number"></input></td>
   <td>Кол-во <input size="3" id="count" type="number" min="1" max="100" oninput="countFix()"></input></td>
   <td width="50%">
-    <input size="60" type="text" list="hintNames" id="inputName" oninput="makeHintCodes()">
-  <input size="14" type="text" list="hintCodes" id="inputCode" oninput="checkName()">
+    <input size="60" placeholder="Наименование" type="text" list="hintNames" id="inputName" oninput="makeHintCodes()">
+  <input size="14" placeholder="Код изделия" type="text" list="hintCodes" id="inputCode" oninput="checkName()">
   </td>
   <td><button id="button" type="button" onclick="addImages()" enabled>Добавить</button></td>
  </tr>
