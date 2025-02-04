@@ -135,7 +135,7 @@ class Techno(Database):
         "Отладка"
     }
 
-    def add_worker(self, login, password, name):
+    def add_worker(self, login, password, name, tg=0):
         if login:
             columns = "w_login"
             values = f"'{login}'"
@@ -145,6 +145,10 @@ class Techno(Database):
 
             columns += ", w_name"
             values += f", '{name}'"
+
+            if tg:
+                columns += ", tg_id"
+                values += f", {tg}"
 
             self._commit(f"insert into workers({columns}) values ({values})")
 
@@ -161,6 +165,12 @@ class Techno(Database):
         if name:
             self._commit(f"update workers set w_passhash = '{phash}' where id = {id}")
 
+    def set_worker_tg_id(self, id, tg_id=0):
+        if tg_id:
+            self._commit(f"update workers set tg_id = {tg_id} where id = {id}")
+        else:
+            self._commit(f"update workers set tg_id = NULL where id = {id}")
+
 
     def delete_worker(self, id):
         if id:
@@ -174,6 +184,12 @@ class Techno(Database):
 
     def get_worker_by_id(self, id):
         r = self._fetchall(f"select * from workers where id = {id}")
+        if r:
+            return r[0]
+        return {}
+
+    def get_worker_by_tg(self, tg):
+        r = self._fetchall(f"select * from workers where tg_id = {tg}")
         if r:
             return r[0]
         return {}

@@ -10,6 +10,7 @@ CREATE TABLE workers
     w_login varchar(256) not null unique,
     w_passhash varchar(256) not null,
     w_name varchar(256) not null,
+    tg_id bigint,
     CONSTRAINT PK_worker PRIMARY KEY(id)
 );
 
