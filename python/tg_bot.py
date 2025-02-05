@@ -323,7 +323,7 @@ def new_reg(message):
     print("new_reg()")
     global db
     worker = db.get_worker_by_tg(message.chat.id)
-    if worker:
+    if not worker:
         new_reg_form(message.chat.id)
         form_func[message.chat.id] = done_reg
         take_form(message, is_first=True)
