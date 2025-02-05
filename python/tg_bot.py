@@ -250,9 +250,10 @@ def new_operations_form(id, m_options=[]):
     print("new_form()")
     # m_options = 
     device_form = []
-    # device_form.append(Field('number', 'Заводской номер устройства:'))
+    device_form.append(Field('number', 'Заводской номер устройства:'))
     device_form.append(Field('action', 'Выберите операции', multi_options=m_options, limit=32))
-    # device_form.append(Field('state', 'Нажмите по окончанию выбора операций', single_options=['Применить']))
+    device_form.append(Field('state', 'Применить?', single_options=['Применить', 'Отмена']))
+    forms[id] = device_form[:]
 
 
 def form_to_map(form):
@@ -270,27 +271,64 @@ def print_form(form):
 
 # empty_form = {'number': "", 'address': "", 'size': 0, 'noise_insulation':"", 'surfase':"", 'mount':"", 'new_build': False, 'elevators':""}
 
-
 # @bot.message_handler(commands=['new_order'])
 def new_device(message):
     print("new_device()")
     global db
-    ops = []
-    new_operations_form(message.chat.id, ops)
-    form_func[message.chat.id] = done_form
-    take_form(message, is_first=True)
+    worker = db.get_worker_by_tg(int(message.chat.id))
+    if worker:
+        ops = db.get_operation_for_device(message.text)
+        # show data
+        data = ""
+        for op in ops:
+            if len(data):
+                data += f"\n"
+            row = f"{op['operation']}: {op['worker']} ({op['dt']})"
+            data += f"{row}"
+            # bot.send_message(message.chat.id, f"{i}")
+        if len(data):
+            bot.send_message(message.chat.id, data)
+        else:
+            bot.send_message(message.chat.id, "Нет операций по этому номеру!")
+        nops = db.get_operations_to_worker(worker['id'])
+        if nops:
+            new_operations_form(message.chat.id, nops)
+            form_func[message.chat.id] = done_form
+            form_keys[message.chat.id] = 'number'
+            take_form(message, is_first=True)
 
 def done_form(message, form):
     print("done_form()")
     dt = form_to_map(form)
+    ops = dt['action'].value.split(',')
+    if dt['state'].value == "Применить":
+        global db 
+        worker = db.get_worker_by_tg(message.chat.id)
+        if worker:
+            for op in ops:
+                op = op.strip()
+                print(f"+{op}")
+                db.add_operation(dt['number'].value, worker['w_login'], op)
+            bot.send_message(message.chat.id, f"Готово!")
+        else:
+            bot.send_message(message.chat.id, f"Вы не авторизованы!")
+            unbind(message)
+    else:
+        bot.send_message(message.chat.id, f"Действие отменено!")
+    bot.send_message(message.chat.id, f"Введите номер устройства:")
 
 
 @bot.message_handler(commands=['registration'])
 def new_reg(message):
     print("new_reg()")
-    new_reg_form(message.chat.id)
-    form_func[message.chat.id] = done_reg
-    take_form(message, is_first=True)
+    global db
+    worker = db.get_worker_by_tg(message.chat.id)
+    if worker:
+        new_reg_form(message.chat.id)
+        form_func[message.chat.id] = done_reg
+        take_form(message, is_first=True)
+    else:
+        bot.send_message(message.chat.id, f"Ваш аккаунт уже привязан к учетной записи. Используйте /unbind что бы отвязать.")
 
 def done_reg(message, form):
     global db
@@ -304,9 +342,14 @@ def done_reg(message, form):
 @bot.message_handler(commands=['bind'])
 def new_bind(message):
     print("new_bind()")
-    new_bind_form(message.chat.id)
-    form_func[message.chat.id] = done_bind
-    take_form(message, is_first=True)
+    global db
+    worker = db.get_worker_by_tg(message.chat.id)
+    if not worker:
+        new_bind_form(message.chat.id)
+        form_func[message.chat.id] = done_bind
+        take_form(message, is_first=True)
+    else:
+        bot.send_message(message.chat.id, f"Ваш аккаунт уже привязан к учетной записи. Используйте /unbind что бы отвязать.")
 
 def done_bind(message, form):
     global db
@@ -339,82 +382,86 @@ def unbind(message):
 
 def take_form(message, field="", dt="", is_first=False):
     print("take_form()")
-    key_handler = True
-    if not message.chat.id in form_keys:
-        form_keys[message.chat.id] = ""
-    field = form_keys[message.chat.id]
-    print(f"field: {field}")
-    if not dt:
-        dt = message.text
-    else:
-        key_handler = False
-    form = forms[message.chat.id]
-    if dt[0] == '/':
-        if dt.lower().find('cancel') >= 0:
-            # new_form(message.chat.id)
-            del forms[message.chat.id]
-            bot.send_message(message.chat.id, "Заявка отменена!")
-            return
-        if not is_first:
-            common(message)
-            return
-    else:
-        if field:
-            for i in form:
-                if i.key == field:
-                    if dt in i.multi_options:
-                        if i.options_limit > 0:
-                            print("MULTI options")
-                    else:
-                        i.value = dt
-                        if i.hidden:
-                            bot.delete_message(message.chat.id, message.message_id)
-                    i.is_default = False
-    done = True
-    for fld in form:
-        print(fld.key)
-        if fld.is_default:
-            # if field:
-            #     print(f"save field[{field}]...")
-            #     for i in form:
-            #         if i.key == field:
-            #             print("saved")
-            #             i.value = dt
-            #             i.is_default = False
-            #             field = ""
-            #             break
-            #     continue
-            l_ops = fld.multi_options.copy()
-            print("fld.multi_options: ", fld.multi_options)
-            if fld.is_default:
-                print("fld.single_options: ", fld.single_options)
-                l_ops += fld.single_options.copy()
-            print("l_ops:", l_ops)
-            ops = inline_btns(l_ops, fld.key)
-            print_form(forms[message.chat.id])
-            print("waiting")
-            bot.send_message(message.chat.id, fld.hint, reply_markup=ops)
-            form_keys[message.chat.id] = fld.key
-            if key_handler:
-                bot.register_next_step_handler(message, take_form, fld.key)
-            done = False
-            return
-        # field = fld.key
-        # print(f"field: {field}")
-    res_func = form_func[message.chat.id]
-    print(f"done: {done}")
-    print(f"func: {res_func}")
-    if done:
-        if res_func:
-            res_func(message, form)
-            del form_func[message.chat.id]
+    try:
+        key_handler = True
+        if not message.chat.id in form_keys:
+            form_keys[message.chat.id] = ""
+        field = form_keys[message.chat.id]
+        print(f"field: {field}")
+        if not dt:
+            dt = message.text
         else:
-            data = ""
-            for fld in form:
-                data += f"\n{fld.hint} \n{fld.value}\n"
-            send_to_admins(message, data)
-        del form_keys[message.chat.id]
-        del forms[message.chat.id]
+            key_handler = False
+        form = forms[message.chat.id]
+        if dt[0] == '/':
+            if dt.lower().find('cancel') >= 0:
+                # new_form(message.chat.id)
+                del forms[message.chat.id]
+                bot.send_message(message.chat.id, "Заявка отменена!")
+                return
+            if not is_first:
+                common(message)
+                return
+        else:
+            if field:
+                for i in form:
+                    if i.key == field:
+                        if dt in i.multi_options:
+                            if i.options_limit > 0:
+                                print("MULTI options")
+                        else:
+                            i.value = dt
+                            if i.hidden:
+                                bot.delete_message(message.chat.id, message.message_id)
+                        i.is_default = False
+        done = True
+        for fld in form:
+            print(fld.key)
+            if fld.is_default:
+                # if field:
+                #     print(f"save field[{field}]...")
+                #     for i in form:
+                #         if i.key == field:
+                #             print("saved")
+                #             i.value = dt
+                #             i.is_default = False
+                #             field = ""
+                #             break
+                #     continue
+                l_ops = fld.multi_options.copy()
+                print("fld.multi_options: ", fld.multi_options)
+                if fld.is_default:
+                    print("fld.single_options: ", fld.single_options)
+                    l_ops += fld.single_options.copy()
+                print("l_ops:", l_ops)
+                ops = inline_btns(l_ops, fld.key)
+                print_form(forms[message.chat.id])
+                print("waiting")
+                bot.send_message(message.chat.id, fld.hint, reply_markup=ops)
+                form_keys[message.chat.id] = fld.key
+                if key_handler:
+                    bot.register_next_step_handler(message, take_form, fld.key)
+                done = False
+                return
+            # field = fld.key
+            # print(f"field: {field}")
+        res_func = form_func[message.chat.id]
+        print(f"done: {done}")
+        print(f"func: {res_func}")
+        if done:
+            if res_func:
+                res_func(message, form)
+                del form_func[message.chat.id]
+            else:
+                data = ""
+                for fld in form:
+                    data += f"\n{fld.hint} \n{fld.value}\n"
+                send_to_admins(message, data)
+            del form_keys[message.chat.id]
+            del forms[message.chat.id]
+    except Exception as e:
+        print(red_text(f"Error: {e}"))
+        common(message)
 
 
 
@@ -547,12 +594,7 @@ def common(message):
     if worker:
         if text.isnumeric():
             if len(text) == 8:
-                ops = db.get_operation_for_device(text)
-                # show data
-                for i in ops:
-                    bot.send_message(message.chat.id, f"{i}")
-                # if access:
-                #   new_device(message)
+                new_device(message)
             else:
                 bot.send_message(message.chat.id, f"Длина числа должна быть 8 цифр!")
         else:

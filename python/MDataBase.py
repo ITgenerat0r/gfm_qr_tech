@@ -236,6 +236,20 @@ class Techno(Database):
                 return worker[0]
             return ""
 
+    def get_operations_to_worker(self, user_id):
+        fields = "user_groups.*"
+        data = self._fetchall(f"select {fields} from wg_bonds LEFT JOIN user_groups ON wg_bonds.g_name = user_groups.id where w_login = {user_id}")
+        if data:
+            # print(f"data: {data}")
+            for i in data:
+                # print(f"-{i}")
+                if i['access']>0:
+                    res = []
+                    for j in self.stages:
+                        res.append(j)
+                    return res
+        return {}
+
 
 
 

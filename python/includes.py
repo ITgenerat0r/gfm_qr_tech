@@ -172,3 +172,26 @@ btn_types = types.InlineKeyboardButton(text='label1', callback_data='btn_types')
 kb.add(btn_types)
 
 
+
+
+
+def get_value_from_str(data, key):
+  x = data.find(key)
+  if x >= 0:
+    dt = data[x:]
+    b_ind = dt.find(':')
+    if b_ind >= 0:
+      e_ind = dt.find(',')
+      if e_ind >= 0:
+        return dt[b_ind+1:e_ind]
+      else:
+        return dt[b_ind+1:]
+  return ''
+
+
+
+
+
+
+
+
