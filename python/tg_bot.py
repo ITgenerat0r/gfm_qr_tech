@@ -232,7 +232,7 @@ def new_bind_form(id):
     print("new_bind_form()")
     bind_form = []
     bind_form.append(Field('login', 'Логин:'))
-    bind_form.append(Field('pass', 'Пароль:'))
+    bind_form.append(Field('pass', 'Пароль:', hidden=True))
     forms[id] = bind_form[:]
 
 
