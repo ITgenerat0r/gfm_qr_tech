@@ -554,30 +554,37 @@ def callback_message(callback):
                 print(f"Pressed '{operation}' for {number}")
                 ops = db.get_operation_for_device(number)
                 worker = db.get_worker_by_tg(callback.message.chat.id)
+                groups = db.get_worker_groups(worker['w_login'])
+                access_level = 0
+                for group in groups:
+                    if group['access'] > access_level:
+                        access_level = group['access']
+                print(f"access_level: {access_level}")
                 print(blue_text(f"ops: {ops}"))
-                is_exist = False
-                for op in ops:
-                    if op['operation'] == operation and op['worker'] == worker['w_login']:
-                        is_exist = True
-                        db.delete_operation_by_id(op['id'])
-                if not is_exist:
-                    db.add_operation(number, worker['w_login'], operation)
-                # update ops
-                ops = db.get_operation_for_device(number)
-                sdata = ""
-                for op in ops:
-                    if len(sdata):
-                        sdata += f"\n"
-                    row = f"{op['operation']:15}: {op['worker']:<15} ({op['dt']})"
-                    sdata += f"{row}"
-                    # bot.send_message(message.chat.id, f"{i}")
-                if not len(sdata):
-                    sdata = "Нет операций по этому номеру!"
-                nops = db.get_operations_to_worker(worker['id'])
-                rm = ''
-                if nops:
-                    rm = inline_btns(nops, "ops")
-                bot.edit_message_text(chat_id=callback.message.chat.id, message_id=buttons[callback.message.chat.id], text=sdata, reply_markup=rm)
+                if access_level:
+                    is_exist = False
+                    for op in ops:
+                        if op['operation'] == operation and op['worker'] == worker['w_login']:
+                            is_exist = True
+                            db.delete_operation_by_id(op['id'])
+                    if not is_exist:
+                        db.add_operation(number, worker['w_login'], operation)
+                    # update ops
+                    ops = db.get_operation_for_device(number)
+                    sdata = ""
+                    for op in ops:
+                        if len(sdata):
+                            sdata += f"\n"
+                        row = f"{op['operation']:15}: {op['worker']:<15} ({op['dt']})"
+                        sdata += f"{row}"
+                        # bot.send_message(message.chat.id, f"{i}")
+                    if not len(sdata):
+                        sdata = "Нет операций по этому номеру!"
+                    nops = db.get_operations_to_worker(worker['id'])
+                    rm = ''
+                    if nops:
+                        rm = inline_btns(nops, "ops")
+                    bot.edit_message_text(chat_id=callback.message.chat.id, message_id=buttons[callback.message.chat.id], text=sdata, reply_markup=rm)
                 
                     # bot.edit_message_reply_markup(callback.message.chat.id, message_id=buttons[callback.message.chat.id], reply_markup=rm)
         else:
