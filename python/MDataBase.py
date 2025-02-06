@@ -370,6 +370,9 @@ class Techno(Database):
                 return dt[0]
         return {}
 
+    def get_list_groups(self):
+        return self._fetchall(f"select * from user_groups")
+
 
     def add_group(self, name, access_level=0):
         if name:
