@@ -100,6 +100,8 @@ client_file_id = None
 forms = {}
 form_keys = {}
 form_func = {}
+numbers = {}
+buttons = {}
 
 last_err = ""
 
@@ -503,65 +505,103 @@ def send_to_admins(message, data):
 def callback_message(callback):
     print("\ncallback()")
     print(yellow_text(get_time()), f"{callback.message.chat.id}({str(callback.message.from_user.username)}): '{callback.message.text}'")
-    if callback.message:
-        print_callback(callback.message)
-        for row in callback.message.json['reply_markup']['inline_keyboard']:
-            print(blue_text(f"{row}"))
-            if callback.data==row[0]['callback_data']:
-                for i in row:
-                    print("-", i['text'])
-                print(f'Текст на нажатой кнопке: {row[0]["text"]}')
-                if len(row[0]["callback_data"]) > 1:
-                    # bot.edit_message_reply_markup(callback.message.chat.id, message_id=callback.message.message_id, reply_markup='')
-                    # bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f"{callback.message.text}\n{row[0]['text']}")
-                    dt = row[0]["callback_data"].split('|')
+    print(blue_text(callback.data))
+    data = callback.data.split('|')
+    if data[0] == "ops":
+        if len(data) >= 2:
+            number = numbers[callback.message.chat.id]
+            operation = data[1]
+            print(f"Pressed '{operation}' for {number}")
+            ops = db.get_operation_for_device(number)
+            worker = db.get_worker_by_tg(callback.message.chat.id)
+            print(blue_text(f"ops: {ops}"))
+            is_exist = False
+            for op in ops:
+                if op['operation'] == operation and op['worker'] == worker['w_login']:
+                    is_exist = True
+                    db.delete_operation_by_id(op['id'])
+            if not is_exist:
+                db.add_operation(number, worker['w_login'], operation)
+            # update ops
+            ops = db.get_operation_for_device(number)
+            sdata = ""
+            for op in ops:
+                if len(sdata):
+                    sdata += f"\n"
+                row = f"{op['operation']:15}: {op['worker']:<15} ({op['dt']})"
+                sdata += f"{row}"
+                # bot.send_message(message.chat.id, f"{i}")
+            if not len(sdata):
+                sdata = "Нет операций по этому номеру!"
+            nops = db.get_operations_to_worker(worker['id'])
+            rm = ''
+            if nops:
+                rm = inline_btns(nops, "ops")
+            bot.edit_message_text(chat_id=callback.message.chat.id, message_id=buttons[callback.message.chat.id], text=sdata, reply_markup=rm)
+            
+                # bot.edit_message_reply_markup(callback.message.chat.id, message_id=buttons[callback.message.chat.id], reply_markup=rm)
+    else:
+        if callback.message:
+            print_callback(callback.message)
+            for row in callback.message.json['reply_markup']['inline_keyboard']:
+                print(blue_text(f"{row}"))
+                if callback.data==row[0]['callback_data']:
+                    for i in row:
+                        print("-", i['text'])
+                    print(f'Текст на нажатой кнопке: {row[0]["text"]}')
+                    if len(row[0]["callback_data"]) > 1:
+                        # bot.edit_message_reply_markup(callback.message.chat.id, message_id=callback.message.message_id, reply_markup='')
+                        # bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f"{callback.message.text}\n{row[0]['text']}")
+                        dt = row[0]["callback_data"].split('|')
+                        print(blue_text(f"dt: {dt}"))
 
-                    form = forms[callback.message.chat.id]
-                    for i in form:
-                        if i.key == dt[0]:
-                            # print("Not default!")
-                            if row[0]["text"] in i.multi_options:
-                                print(blue_text("in multi_options"))
-                                print(i.multi_options)
-                                print(i.single_options)
-                                if i.options_limit > 0:
-                                    print(blue_text('limit > 0'))
-                                    i.multi_options.remove(row[0]["text"])
-                                    print("deleted")
+                        form = forms[callback.message.chat.id]
+                        for i in form:
+                            if i.key == dt[0]:
+                                # print("Not default!")
+                                if row[0]["text"] in i.multi_options:
+                                    print(blue_text("in multi_options"))
                                     print(i.multi_options)
+                                    print(i.single_options)
+                                    if i.options_limit > 0:
+                                        print(blue_text('limit > 0'))
+                                        i.multi_options.remove(row[0]["text"])
+                                        print("deleted")
+                                        print(i.multi_options)
 
-                                    if len(i.value):
-                                        i.value += f", "
-                                    i.value += f"{row[0]['text']}"
-                                    i.options_limit -= 1
-                                    rm = inline_btns(i.multi_options, i.key)
-                                    print(blue_text(f"{rm}"))
-                                    bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f"{i.hint}\n{i.value}")
-                                    if i.options_limit < 1:
-                                        bot.edit_message_reply_markup(callbac.message.chat.id, message_id=callback.message.message_id, reply_markup='')
+                                        if len(i.value):
+                                            i.value += f", "
+                                        i.value += f"{row[0]['text']}"
+                                        i.options_limit -= 1
+                                        rm = inline_btns(i.multi_options, i.key)
+                                        print(blue_text(f"{rm}"))
+                                        bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f"{i.hint}\n{i.value}")
+                                        if i.options_limit < 1:
+                                            bot.edit_message_reply_markup(callbac.message.chat.id, message_id=callback.message.message_id, reply_markup='')
+                                        else:
+                                            bot.edit_message_reply_markup(callback.message.chat.id, message_id=callback.message.message_id, reply_markup=rm)
+
+                                        print("limit", i.options_limit)
+
+                                        if i.is_default:
+                                            i.is_default = False
+                                            print(blue_text("is default"))
+                                            take_form(callback.message, dt[0], row[0]["text"])
+                                        else:
+                                            print(blue_text("not default"))
+                                        return
                                     else:
-                                        bot.edit_message_reply_markup(callback.message.chat.id, message_id=callback.message.message_id, reply_markup=rm)
-
-                                    print("limit", i.options_limit)
-
-                                    if i.is_default:
-                                        i.is_default = False
-                                        print(blue_text("is default"))
-                                        take_form(callback.message, dt[0], row[0]["text"])
-                                    else:
-                                        print(blue_text("not default"))
-                                    return
-                                else:
-                                    return
+                                        return
+                                # else:
+                                #     # i.value = row[0]["text"]
+                                #     bot.edit_message_reply_markup(callback.message.chat.id, message_id=callback.message.message_id, reply_markup='')
+                                #     bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f"{callback.message.text}\n{row[0]['text']}")    
                             # else:
-                            #     # i.value = row[0]["text"]
-                            #     bot.edit_message_reply_markup(callback.message.chat.id, message_id=callback.message.message_id, reply_markup='')
-                            #     bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f"{callback.message.text}\n{row[0]['text']}")    
-                        # else:
-                    print("empty reply_markup")
-                    bot.edit_message_reply_markup(callback.message.chat.id, message_id=callback.message.message_id, reply_markup='')
-                    bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f"{callback.message.text}\n{row[0]['text']}")    
-                    take_form(callback.message, dt[0], row[0]["text"])
+                        print("empty reply_markup")
+                        bot.edit_message_reply_markup(callback.message.chat.id, message_id=callback.message.message_id, reply_markup='')
+                        bot.edit_message_text(chat_id=callback.message.chat.id, message_id=callback.message.message_id, text=f"{callback.message.text}\n{row[0]['text']}")    
+                        take_form(callback.message, dt[0], row[0]["text"])
+                
 
 def print_callback(dt):
     # print(yellow_text(f"{dt}"))
@@ -594,7 +634,30 @@ def common(message):
     if worker:
         if text.isnumeric():
             if len(text) == 8:
-                new_device(message)
+                # new_device(message)
+                numbers[message.chat.id] = int(message.text)
+                if message.chat.id in buttons:
+                    # bot.delete_message(message.chat.id, buttons[message.chat.id])
+                    bot.edit_message_reply_markup(message.chat.id, message_id=buttons[message.chat.id], reply_markup='')
+                # show here
+                ops = db.get_operation_for_device(message.text)
+                # show data
+                data = ""
+                for op in ops:
+                    if len(data):
+                        data += f"\n"
+                    row = f"{op['operation']:15}: {op['worker']:<15} ({op['dt']})"
+                    data += f"{row}"
+                    # bot.send_message(message.chat.id, f"{i}")
+                if len(data):
+                    bot.send_message(message.chat.id, data)
+                else:
+                    bot.send_message(message.chat.id, "Нет операций по этому номеру!")
+                nops = db.get_operations_to_worker(worker['id'])
+                if nops:
+                    rm = inline_btns(nops, "ops")
+                    bot.edit_message_reply_markup(message.chat.id, message_id=message.message_id+1, reply_markup=rm)
+                buttons[message.chat.id] = message.message_id+1
             else:
                 bot.send_message(message.chat.id, f"Длина числа должна быть 8 цифр!")
         else:

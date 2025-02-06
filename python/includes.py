@@ -137,14 +137,14 @@ def inline_btns(list=[], callback_tag=""):
     if not callback_tag:
       callback_tag = list[i]
     btn1 = types.InlineKeyboardButton(list[i], callback_data=f"{callback_tag}|{list[i]}")
-    # if i + 1 < len(list) and list[i + 1] != " ":
-    #     btn2 = types.InlineKeyboardButton(list[i + 1], callback_data=callback_tag)
-    #     markup.row(btn1, btn2)
-    # else:
-    #     markup.row(btn1)
-    # i += 2
-    markup.row(btn1)
-    i += 1
+    if i + 1 < len(list) and list[i + 1] != " ":
+        btn2 = types.InlineKeyboardButton(list[i + 1], callback_data=f"{callback_tag}|{list[i+1]}")
+        markup.row(btn1, btn2)
+    else:
+        markup.row(btn1)
+    i += 2
+    # markup.row(btn1)
+    # i += 1
   return markup
 
 
