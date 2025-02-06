@@ -360,12 +360,19 @@ def done_reg(message, form):
 
 @bot.message_handler(commands=['add'])
 def add_user_group(message):
-    dt = message.text.split(' ')
-    if len(dt) > 2:
-        res = db.add_user_to_group(dt[1], dt[2])
-        bot.send_message(message.chat.id, f"Result: {res}")
-        return
-    bot.send_message(message.chat.id, "Укажите параметры!")
+    if message.chat.id in admins:
+        dt = message.text.split(' ')
+        if len(dt) > 2:
+            res = db.add_user_to_group(dt[1], dt[2])
+            if res == 1:
+                bot.send_message(message.chat.id, f"Пользователь добавлен в группу.")
+            else:
+                bot.send_message(message.chat.id, f"Пользователь уже есть в этой группе.")
+            # bot.send_message(message.chat.id, f"Result: {res}")
+            return
+        bot.send_message(message.chat.id, "Недостаточно параметров!")
+    else:
+        bot.send_message(message.chat.id, f"Требуются права администратора!")
 
 
 
